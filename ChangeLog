@@ -1,0 +1,29 @@
+TODO
+* move compression to libfwnt
+* update manuals
+
+20141129
+* code clean up
+
+20141021
+* changes for deployment
+* removed README.macosx
+
+20140703
+* updated dependencies
+* added libfwnt
+
+20140119
+* 2014 update
+* updated dependencies
+* added libcthreads
+
+20130831
+* updated dependencies
+
+20121206
+* worked on initial version
+
+20121205
+* initial version based on libvhdi
+

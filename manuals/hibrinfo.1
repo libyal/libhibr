@@ -1,0 +1,57 @@
+.Dd January 19, 2014
+.Dt hibrinfo
+.Os libhibr
+.Sh NAME
+.Nm hibrinfo
+.Nd determines information about a Windows Hibernation File (hiberfil.sys)
+.Sh SYNOPSIS
+.Nm hibrinfo
+.Op Fl hvV
+.Va Ar source
+.Sh DESCRIPTION
+.Nm hibrinfo
+is a utility to determine information about a Windows Hibernation File (hiberfil.sys)
+.Pp
+.Nm hibrinfo
+is part of the
+.Nm libhibr
+package.
+.Nm libhibr
+is a library to access the Windows Hibernation File (hiberfil.sys) format
+.Pp
+.Ar source
+is the source file.
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl h
+shows this help
+.It Fl v
+verbose output to stderr
+.It Fl V
+print version
+.El
+.Sh ENVIRONMENT
+None
+.Sh FILES
+None
+.Sh EXAMPLES
+.Bd -literal
+# hibrinfo hiberfil.sys
+hibrinfo 20120915
+
+Windows Hibernation File information:
+.Dl        ...
+
+.Ed
+.Sh DIAGNOSTICS
+Errors, verbose and debug output are printed to stderr when verbose output \-v is enabled.
+Verbose and debug output are only printed when enabled at compilation.
+.Sh BUGS
+Please report bugs of any kind to <joachim.metz@gmail.com> or on the project website:
+http://code.google.com/p/libhibr/
+.Sh AUTHOR
+These man pages were written by Joachim Metz.
+.Sh COPYRIGHT
+Copyright 2012-2014, Joachim Metz <joachim.metz@gmail.com>.
+.Sh SEE ALSO
