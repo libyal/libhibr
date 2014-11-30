@@ -14,7 +14,6 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
-	@LIBFVALUE_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@
 
 lib_LTLIBRARIES = libhibr.la
@@ -42,7 +41,6 @@ libhibr_la_SOURCES = \
 	libhibr_libcstring.h \
 	libhibr_libfcache.h \
 	libhibr_libfdata.h \
-	libhibr_libfvalue.h \
 	libhibr_libuna.h \
 	libhibr_notify.c libhibr_notify.h \
 	libhibr_support.c libhibr_support.h \
@@ -62,7 +60,6 @@ libhibr_la_LIBADD = \
 	@LIBBFIO_LIBADD@ \
 	@LIBFCACHE_LIBADD@ \
 	@LIBFDATA_LIBADD@ \
-	@LIBFVALUE_LIBADD@ \
 	@LIBFWNT_LIBADD@
 
 libhibr_la_LDFLAGS = -no-undefined -version-info 1:0:0

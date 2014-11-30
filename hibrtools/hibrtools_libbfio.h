@@ -1,5 +1,5 @@
 /*
- * The libfvalue header wrapper
+ * The libbfio header wrapper
  *
  * Copyright (c) 2012-2014, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,36 +19,31 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBHIBR_LIBFVALUE_H )
-#define _LIBHIBR_LIBFVALUE_H
+#if !defined( _HIBRTOOLS_LIBBFIO_H )
+#define _HIBRTOOLS_LIBBFIO_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBFVALUE for local use of libfvalue
+/* Define HAVE_LOCAL_LIBBFIO for local use of libbfio
  */
-#if defined( HAVE_LOCAL_LIBFVALUE )
+#if defined( HAVE_LOCAL_LIBBFIO )
 
-#include <libfvalue_codepage.h>
-#include <libfvalue_definitions.h>
-#include <libfvalue_floating_point.h>
-#include <libfvalue_integer.h>
-#include <libfvalue_split_string.h>
-#include <libfvalue_string.h>
-#include <libfvalue_table.h>
-#include <libfvalue_types.h>
-#include <libfvalue_value.h>
-#include <libfvalue_value_type.h>
+#include <libbfio_definitions.h>
+#include <libbfio_file.h>
+#include <libbfio_handle.h>
+#include <libbfio_pool.h>
+#include <libbfio_types.h>
 
 #else
 
-/* If libtool DLL support is enabled set LIBFVALUE_DLL_IMPORT
- * before including libfvalue.h
+/* If libtool DLL support is enabled set LIBBFIO_DLL_IMPORT
+ * before including libbfio.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBFVALUE_DLL_IMPORT
+#define LIBBFIO_DLL_IMPORT
 #endif
 
-#include <libfvalue.h>
+#include <libbfio.h>
 
 #endif
 

@@ -730,6 +730,7 @@ int libhibr_file_close(
 		internal_file->file_io_handle_created_in_library = 0;
 	}
 	internal_file->file_io_handle = NULL;
+	internal_file->current_offset = 0;
 
 	if( libhibr_io_handle_clear(
 	     internal_file->io_handle,
@@ -1131,18 +1132,7 @@ ssize_t libhibr_file_read_buffer(
 	}
 	internal_file = (libhibr_internal_file_t *) file;
 
-	if( internal_file->io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid file - missing IO handle.",
-		 function );
-
-		return( -1 );
-	}
-	if( internal_file->io_handle->current_offset < 0 )
+	if( internal_file->current_offset < 0 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1189,7 +1179,7 @@ ssize_t libhibr_file_read_buffer(
 
 		return( -1 );
 	}
-	if( (size64_t) internal_file->io_handle->current_offset >= media_size )
+	if( (size64_t) internal_file->current_offset >= media_size )
 	{
 		return( 0 );
 	}
@@ -1201,14 +1191,14 @@ ssize_t libhibr_file_read_buffer(
 			libcnotify_printf(
 			 "%s: requested offset\t\t\t\t\t: 0x%08" PRIx64 "\n",
 			 function,
-			 internal_file->io_handle->current_offset );
+			 internal_file->current_offset );
 		}
 #endif
 		if( libfdata_list_get_element_value_at_offset(
 		     internal_file->compressed_page_data_list,
 		     internal_file->file_io_handle,
 		     internal_file->compressed_page_data_cache,
-		     internal_file->io_handle->current_offset,
+		     internal_file->current_offset,
 		     &element_index,
 		     &page_data_offset,
 		     (intptr_t **) &compressed_page_data,
@@ -1221,7 +1211,7 @@ ssize_t libhibr_file_read_buffer(
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve compressed page data at offset: 0x%08" PRIx64 ".",
 			 function,
-			 internal_file->io_handle->current_offset );
+			 internal_file->current_offset );
 
 			return( -1 );
 		}
@@ -1233,7 +1223,7 @@ ssize_t libhibr_file_read_buffer(
 			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 			 "%s: missing compressed page data at offset: 0x%08" PRIx64 ".",
 			 function,
-			 internal_file->io_handle->current_offset );
+			 internal_file->current_offset );
 
 			return( -1 );
 		}
@@ -1258,11 +1248,11 @@ ssize_t libhibr_file_read_buffer(
 
 			return( -1 );
 		}
-		internal_file->io_handle->current_offset += read_size;
+		internal_file->current_offset += read_size;
 
 		buffer_offset += read_size;
 
-		if( (size64_t) internal_file->io_handle->current_offset >= media_size )
+		if( (size64_t) internal_file->current_offset >= media_size )
 		{
 			break;
 		}
@@ -1344,17 +1334,6 @@ off64_t libhibr_file_seek_offset(
 	}
 	internal_file = (libhibr_internal_file_t *) file;
 
-	if( internal_file->io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid file - missing IO handle.",
-		 function );
-
-		return( -1 );
-	}
 	if( ( whence != SEEK_CUR )
 	 && ( whence != SEEK_END )
 	 && ( whence != SEEK_SET ) )
@@ -1370,7 +1349,7 @@ off64_t libhibr_file_seek_offset(
 	}
 	if( whence == SEEK_CUR )
 	{
-		offset += internal_file->io_handle->current_offset;
+		offset += internal_file->current_offset;
 	}
 	else if( whence == SEEK_END )
 	{
@@ -1401,7 +1380,7 @@ off64_t libhibr_file_seek_offset(
 
 		return( -1 );
 	}
-	internal_file->io_handle->current_offset = offset;
+	internal_file->current_offset = offset;
 
 	return( offset );
 }
@@ -1430,17 +1409,6 @@ int libhibr_file_get_offset(
 	}
 	internal_file = (libhibr_internal_file_t *) file;
 
-	if( internal_file->io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid file - missing IO handle.",
-		 function );
-
-		return( -1 );
-	}
 	if( offset == NULL )
 	{
 		libcerror_error_set(
@@ -1452,7 +1420,7 @@ int libhibr_file_get_offset(
 
 		return( -1 );
 	}
-	*offset = internal_file->io_handle->current_offset;
+	*offset = internal_file->current_offset;
 
 	return( 1 );
 }

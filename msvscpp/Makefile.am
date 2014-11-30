@@ -15,7 +15,6 @@ MSVSCPP_FILES = \
 	libcthreads/libcthreads.vcproj \
 	libfcache/libfcache.vcproj \
 	libfdata/libfdata.vcproj \
-	libfvalue/libfvalue.vcproj \
 	libfwnt/libfwnt.vcproj \
 	libhibr/libhibr.vcproj \
 	libuna/libuna.vcproj \

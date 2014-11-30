@@ -2,6 +2,10 @@ TODO
 * move compression to libfwnt
 * update manuals
 
+20141130
+* code clean up
+* remove libfvalue dependency
+
 20141129
 * code clean up
 * changes for project move

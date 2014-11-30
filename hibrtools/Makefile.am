@@ -13,7 +13,6 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
-	@LIBFVALUE_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
 	@LIBCSYSTEM_CPPFLAGS@ \
 	@LIBFUSE_CPPFLAGS@ \
@@ -29,12 +28,14 @@ hibrinfo_SOURCES = \
 	info_handle.c info_handle.h \
 	hibrinfo.c \
 	hibroutput.c hibroutput.h \
+	hibrtools_libbfio.h \
 	hibrtools_libcerror.h \
 	hibrtools_libclocale.h \
 	hibrtools_libcnotify.h \
 	hibrtools_libcstring.h \
 	hibrtools_libcsystem.h \
-	hibrtools_libhibr.h
+	hibrtools_libhibr.h \
+	hibrtools_libuna.h
 
 hibrinfo_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \

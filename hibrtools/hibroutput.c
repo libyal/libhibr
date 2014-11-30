@@ -24,30 +24,14 @@
 #include <memory.h>
 #include <types.h>
 
-#if defined( HAVE_LOCAL_LIBUNA )
-#include <libuna_definitions.h>
-#elif defined( HAVE_LIBUNA_H )
-#include <libuna.h>
-#endif
-
-#if defined( HAVE_LOCAL_LIBBFIO )
-#include <libbfio_definitions.h>
-#elif defined( HAVE_LIBBFIO_H )
-#include <libbfio.h>
-#endif
-
-#if defined( HAVE_LOCAL_LIBFVALUE )
-#include <libfvalue_definitions.h>
-#elif defined( HAVE_LIBFVALUE_H )
-#include <libfvalue.h>
-#endif
-
 #include "hibroutput.h"
+#include "hibrtools_libbfio.h"
 #include "hibrtools_libcerror.h"
 #include "hibrtools_libclocale.h"
 #include "hibrtools_libcnotify.h"
 #include "hibrtools_libcsystem.h"
 #include "hibrtools_libhibr.h"
+#include "hibrtools_libuna.h"
 
 /* Prints the copyright information
  */
@@ -132,11 +116,6 @@ void hibroutput_version_detailed_fprint(
 	 stream,
 	 ", libbfio %s",
 	 LIBBFIO_VERSION_STRING );
-
-	fprintf(
-	 stream,
-	 ", libfvalue %s",
-	 LIBFVALUE_VERSION_STRING );
 
         fprintf(
 	 stream,

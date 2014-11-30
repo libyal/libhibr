@@ -72,6 +72,10 @@ struct libhibr_internal_file
 	 */
 	libfcache_cache_t *compressed_page_data_cache;
 
+	/* The current (storage media) offset
+	 */
+	off64_t current_offset;
+
 	/* Value to indicate if abort was signalled
 	 */
 	int abort;

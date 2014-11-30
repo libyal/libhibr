@@ -44,10 +44,6 @@ struct libhibr_io_handle
 	 */
 	int file_type;
 
-	/* The current (storage media) offset
-	 */
-	off64_t current_offset;
-
 	/* The page size
 	 */
 	size_t page_size;
