@@ -1,5 +1,5 @@
 /*
- * Compression functions
+ * The libfwnt header wrapper
  *
  * Copyright (c) 2012-2014, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,27 +19,33 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBHIBR_COMPRESSION_H )
-#define _LIBHIBR_COMPRESSION_H
+#if !defined( _LIBHIBR_LIBFWNT_H )
+#define _LIBHIBR_LIBFWNT_H
 
 #include <common.h>
-#include <types.h>
 
-#include "libhibr_libcerror.h"
+/* Define HAVE_LOCAL_LIBFWNT for local use of libfwnt
+ */
+#if defined( HAVE_LOCAL_LIBFWNT )
 
-#if defined( __cplusplus )
-extern "C" {
+#include <libfwnt_definitions.h>
+#include <libfwnt_locale_identifier.h>
+#include <libfwnt_lznt1.h>
+#include <libfwnt_lzxpress.h>
+#include <libfwnt_security_identifier.h>
+#include <libfwnt_types.h>
+
+#else
+
+/* If libtool DLL support is enabled set LIBFWNT_DLL_IMPORT
+ * before including libfwnt.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBFWNT_DLL_IMPORT
 #endif
 
-int libhibr_compression_xpress_decompress(
-     const uint8_t *compressed_data,
-     size_t compressed_data_size,
-     uint8_t *uncompressed_data,
-     size_t uncompressed_data_size,
-     libcerror_error_t **error );
+#include <libfwnt.h>
 
-#if defined( __cplusplus )
-}
 #endif
 
 #endif

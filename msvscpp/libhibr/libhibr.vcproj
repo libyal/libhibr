@@ -182,10 +182,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libhibr\libhibr_compression.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libhibr\libhibr_debug.c"
 				>
 			</File>
@@ -237,10 +233,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libhibr\libhibr_compressed_page_map.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libhibr\libhibr_compression.h"
 				>
 			</File>
 			<File
@@ -301,6 +293,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libhibr\libhibr_libfdata.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libhibr\libhibr_libfwnt.h"
 				>
 			</File>
 			<File

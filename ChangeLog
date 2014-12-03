@@ -1,6 +1,8 @@
 TODO
-* move compression to libfwnt
 * update manuals
+
+20141202
+* moved compression to libfwnt
 
 20141130
 * code clean up

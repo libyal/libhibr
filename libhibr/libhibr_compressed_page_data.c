@@ -25,10 +25,10 @@
 #include <types.h>
 
 #include "libhibr_compressed_page_data.h"
-#include "libhibr_compression.h"
 #include "libhibr_libbfio.h"
 #include "libhibr_libcerror.h"
 #include "libhibr_libcnotify.h"
+#include "libhibr_libfwnt.h"
 
 #include "hibr_compressed_page_data.h"
 
@@ -319,10 +319,11 @@ int libhibr_compressed_page_data_read(
 {
 	hibr_compressed_page_data_header_t header;
 
-	uint8_t *compressed_data = NULL;
-	static char *function    = "libhibr_compressed_page_data_read";
-	size_t read_size         = 0;
-	ssize_t read_count       = 0;
+	uint8_t *compressed_data      = NULL;
+	static char *function         = "libhibr_compressed_page_data_read";
+	size_t read_size              = 0;
+	size_t uncompressed_data_size = 0;
+	ssize_t read_count            = 0;
 
 	if( compressed_page_data == NULL )
 	{
@@ -411,11 +412,13 @@ int libhibr_compressed_page_data_read(
 
 		goto on_error;
 	}
-	if( libhibr_compression_xpress_decompress(
+	uncompressed_data_size = compressed_page_data->data_size;
+
+	if( libfwnt_lzxpress_decompress(
 	     compressed_data,
 	     compressed_page_data->compressed_data_size,
 	     compressed_page_data->data,
-	     compressed_page_data->data_size,
+	     &uncompressed_data_size,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

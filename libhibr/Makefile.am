@@ -25,7 +25,6 @@ libhibr_la_SOURCES = \
 	libhibr.c \
 	libhibr_compressed_page_data.c libhibr_compressed_page_data.h \
 	libhibr_compressed_page_map.c libhibr_compressed_page_map.h \
-	libhibr_compression.c libhibr_compression.h \
 	libhibr_debug.c libhibr_debug.h \
 	libhibr_definitions.h \
 	libhibr_error.c libhibr_error.h \
@@ -41,6 +40,7 @@ libhibr_la_SOURCES = \
 	libhibr_libcstring.h \
 	libhibr_libfcache.h \
 	libhibr_libfdata.h \
+	libhibr_libfwnt.h \
 	libhibr_libuna.h \
 	libhibr_notify.c libhibr_notify.h \
 	libhibr_support.c libhibr_support.h \

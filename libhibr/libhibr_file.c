@@ -1196,7 +1196,7 @@ ssize_t libhibr_file_read_buffer(
 #endif
 		if( libfdata_list_get_element_value_at_offset(
 		     internal_file->compressed_page_data_list,
-		     internal_file->file_io_handle,
+		     (intptr_t *) internal_file->file_io_handle,
 		     internal_file->compressed_page_data_cache,
 		     internal_file->current_offset,
 		     &element_index,
