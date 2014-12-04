@@ -125,5 +125,6 @@ stamp-h1
 /libcthreads
 /libfcache
 /libfdata
+/libfdatetime
 /libfwnt
 /libuna

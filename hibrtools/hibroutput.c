@@ -21,7 +21,6 @@
 
 #include <common.h>
 #include <file_stream.h>
-#include <memory.h>
 #include <types.h>
 
 #include "hibroutput.h"

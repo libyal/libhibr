@@ -619,7 +619,7 @@ int libhibr_file_open_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read from file handle.",
+		 "%s: unable to read from file IO handle.",
 		 function );
 
 		goto on_error;
@@ -857,10 +857,10 @@ int libhibr_file_open_read(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "Reading file header page:\n" );
+		 "Reading memory image information page:\n" );
 	}
 #endif
-	if( libhibr_io_handle_read_file_header(
+	if( libhibr_io_handle_read_memory_image_information(
 	     internal_file->io_handle,
 	     file_io_handle,
 	     error ) != 1 )
@@ -869,7 +869,7 @@ int libhibr_file_open_read(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read file header.",
+		 "%s: unable to read memory image information.",
 		 function );
 
 		goto on_error;
@@ -936,7 +936,7 @@ int libhibr_file_open_read(
 		file_offset = internal_file->io_handle->memory_blocks_page_number
 		            * internal_file->io_handle->page_size;
 	}
-	while( file_offset < file_size )
+	while( (size64_t) file_offset < file_size )
 	{
 		if( libhibr_compressed_page_map_read(
 		     compressed_page_map,

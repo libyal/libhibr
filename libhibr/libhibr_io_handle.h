@@ -65,7 +65,7 @@ int libhibr_io_handle_clear(
      libhibr_io_handle_t *io_handle,
      libcerror_error_t **error );
 
-int libhibr_io_handle_read_file_header(
+int libhibr_io_handle_read_memory_image_information(
      libhibr_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error );

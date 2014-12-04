@@ -1,5 +1,5 @@
 /*
- * The file header definition of a Windows Hibernation File (hiberfil.sys)
+ * The memory image information definition of a Windows Hibernation File (hiberfil.sys)
  *
  * Copyright (c) 2012-2014, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _HIBR_FILE_HEADER_H )
-#define _HIBR_FILE_HEADER_H
+#if !defined( _HIBR_MEMORY_IMAGE_INFORMATION_H )
+#define _HIBR_MEMORY_IMAGE_INFORMATION_H
 
 #include <common.h>
 #include <types.h>
@@ -29,9 +29,9 @@
 extern "C" {
 #endif
 
-typedef struct hibr_file_header hibr_file_header_t;
+typedef struct hibr_memory_image_information hibr_memory_image_information_t;
 
-struct hibr_file_header
+struct hibr_memory_image_information
 {
 	/* The signature
 	 * Consists of 4 bytes
@@ -52,41 +52,11 @@ struct hibr_file_header
 	 * Consists of 4 bytes
 	 */
 	uint8_t size[ 4 ];
-
-	/* Unknown
-	 * Consists of 16 bytes
-	 */
-	uint8_t unknown2[ 16 ];
-
-	/* The system time
-	 * Consists of 8 bytes
-	 */
-	uint8_t system_time[ 8 ];
-
-	/* The interrupt time
-	 * Consists of 8 bytes
-	 */
-	uint8_t interrupt_time[ 8 ];
-
-	/* The feature flags
-	 * Consists of 4 bytes
-	 */
-	uint8_t feature_flags[ 4 ];
-
-	/* The hibernation flags
-	 * Consists of 1 byte
-	 */
-	uint8_t hibernation_flags;
-
-	/* Unknown
-	 * Consists of 3 bytes
-	 */
-	uint8_t unknown3[ 3 ];
 };
 
-typedef struct hibr_file_header_winxp_sp3_32bit hibr_file_header_winxp_sp3_32bit_t;
+typedef struct hibr_memory_image_information_winxp_32bit hibr_memory_image_information_winxp_32bit_t;
 
-struct hibr_file_header_winxp_sp3_32bit
+struct hibr_memory_image_information_winxp_32bit
 {
 	/* The signature
 	 * Consists of 4 bytes
@@ -108,10 +78,10 @@ struct hibr_file_header_winxp_sp3_32bit
 	 */
 	uint8_t size[ 4 ];
 
-	/* Unknown
+	/* The page number
 	 * Consists of 4 bytes
 	 */
-	uint8_t unknown1[ 4 ];
+	uint8_t page_number[ 4 ];
 
 	/* The page size
 	 * Consists of 4 bytes
@@ -126,7 +96,7 @@ struct hibr_file_header_winxp_sp3_32bit
 	/* Unknown
 	 * Consists of 4 bytes
 	 */
-	uint8_t unknown2[ 4 ];
+	uint8_t unknown1[ 4 ];
 
 	/* The system time
 	 * Consists of 8 bytes
@@ -151,12 +121,12 @@ struct hibr_file_header_winxp_sp3_32bit
 	/* Unknown
 	 * Consists of 3 bytes
 	 */
-	uint8_t unknown3[ 3 ];
+	uint8_t unknown2[ 3 ];
 
-	/* The number of page table entries
+	/* Unknown
 	 * Consists of 4 bytes
 	 */
-	uint8_t number_of_page_table_entries[ 4 ];
+	uint8_t unknown3[ 4 ];
 
 	/* Unknown
 	 * Consists of 4 bytes
@@ -188,10 +158,10 @@ struct hibr_file_header_winxp_sp3_32bit
 	 */
 	uint8_t number_of_pages[ 4 ];
 
-	/* The compressed hibernated memory blocks page number
+	/* Unknown
 	 * Consists of 4 bytes
 	 */
-	uint8_t memory_blocks_page_number[ 4 ];
+	uint8_t unknown8[ 4 ];
 
 	/* Unknown
 	 * Consists of 4 bytes
@@ -204,9 +174,194 @@ struct hibr_file_header_winxp_sp3_32bit
 	uint8_t unknown10[ 72 ];
 };
 
-typedef struct hibr_file_header_win7_sp1_64bit hibr_file_header_win7_sp1_64bit_t;
+typedef struct hibr_memory_image_information_winxp_64bit hibr_memory_image_information_winxp_64bit_t;
 
-struct hibr_file_header_win7_sp1_64bit
+struct hibr_memory_image_information_winxp_64bit
+{
+	/* The signature
+	 * Consists of 4 bytes
+	 */
+	uint8_t signature[ 4 ];
+
+	/* The version
+	 * Consists of 4 bytes
+	 */
+	uint8_t version[ 4 ];
+
+	/* The checksum
+	 * Consists of 4 bytes
+	 */
+	uint8_t checksum[ 4 ];
+
+	/* The size
+	 * Consists of 4 bytes
+	 */
+	uint8_t size[ 4 ];
+
+	/* The page number
+	 * Consists of 8 bytes
+	 */
+	uint8_t page_number[ 8 ];
+
+	/* The page size
+	 * Consists of 4 bytes
+	 */
+	uint8_t page_size[ 4 ];
+
+	/* The image type
+	 * Consists of 4 bytes
+	 */
+	uint8_t image_type[ 4 ];
+
+	/* The system time
+	 * Consists of 8 bytes
+	 */
+	uint8_t system_time[ 8 ];
+
+	/* The interrupt time
+	 * Consists of 8 bytes
+	 */
+	uint8_t interrupt_time[ 8 ];
+
+	/* The feature flags
+	 * Consists of 4 bytes
+	 */
+	uint8_t feature_flags[ 4 ];
+
+	/* The hibernation flags
+	 * Consists of 1 byte
+	 */
+	uint8_t hibernation_flags;
+
+	/* Unknown
+	 * Consists of 3 bytes
+	 */
+	uint8_t unknown1[ 3 ];
+
+	/* Unknown
+	 * Consists of 4 bytes
+	 */
+	uint8_t unknown2[ 4 ];
+
+	/* Unknown
+	 * Consists of 4 bytes
+	 */
+	uint8_t unknown3[ 4 ];
+
+	/* Unknown
+	 * Consists of 8 bytes
+	 */
+	uint8_t unknown4[ 8 ];
+
+	/* Unknown
+	 * Consists of 8 bytes
+	 */
+	uint8_t unknown5[ 8 ];
+
+	/* The number of free pages
+	 * Consists of 4 bytes
+	 */
+	uint8_t number_of_free_pages[ 4 ];
+
+	/* Unknown
+	 * Consists of 4 bytes
+	 */
+	uint8_t unknown6[ 4 ];
+
+	/* Unknown
+	 * Consists of 4 bytes
+	 */
+	uint8_t unknown7[ 4 ];
+
+	/* Unknown
+	 * Consists of 4 bytes
+	 */
+	uint8_t unknown8[ 4 ];
+
+	/* The (total) number of pages
+	 * Consists of 8 bytes
+	 */
+	uint8_t number_of_pages[ 8 ];
+
+	/* Unknown
+	 * Consists of 8 bytes
+	 */
+	uint8_t unknown9[ 8 ];
+
+	/* Unknown
+	 * Consists of 8 bytes
+	 */
+	uint8_t unknown10[ 8 ];
+
+	/* Unknown
+	 * Consists of 72 bytes
+	 */
+	uint8_t unknown11[ 72 ];
+};
+
+typedef struct hibr_memory_image_information_win7_32bit hibr_memory_image_information_win7_32bit_t;
+
+struct hibr_memory_image_information_win7_32bit
+{
+	/* The signature
+	 * Consists of 4 bytes
+	 */
+	uint8_t signature[ 4 ];
+
+	/* The image type
+	 * Consists of 4 bytes
+	 */
+	uint8_t image_type[ 4 ];
+
+	/* The checksum
+	 * Consists of 4 bytes
+	 */
+	uint8_t checksum[ 4 ];
+
+	/* The size
+	 * Consists of 4 bytes
+	 */
+	uint8_t size[ 4 ];
+
+	/* The page number
+	 * Consists of 4 bytes
+	 */
+	uint8_t page_number[ 4 ];
+
+	/* The page size
+	 * Consists of 4 bytes
+	 */
+	uint8_t page_size[ 4 ];
+
+	/* The system time
+	 * Consists of 8 bytes
+	 */
+	uint8_t system_time[ 8 ];
+
+	/* The interrupt time
+	 * Consists of 8 bytes
+	 */
+	uint8_t interrupt_time[ 8 ];
+
+	/* The feature flags
+	 * Consists of 4 bytes
+	 */
+	uint8_t feature_flags[ 4 ];
+
+	/* The hibernation flags
+	 * Consists of 1 byte
+	 */
+	uint8_t hibernation_flags;
+
+	/* Unknown
+	 * Consists of 3 bytes
+	 */
+	uint8_t unknown3[ 3 ];
+};
+
+typedef struct hibr_memory_image_information_win7_64bit hibr_memory_image_information_win7_64bit_t;
+
+struct hibr_memory_image_information_win7_64bit
 {
 	/* The signature
 	 * Consists of 4 bytes
@@ -231,7 +386,7 @@ struct hibr_file_header_win7_sp1_64bit
 	/* The page number
 	 * Consists of 8 bytes
 	 */
-	uint8_t unknown1[ 8 ];
+	uint8_t page_number[ 8 ];
 
 	/* The page size
 	 * Consists of 8 bytes

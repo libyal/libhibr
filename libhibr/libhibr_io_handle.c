@@ -32,9 +32,10 @@
 #include "libhibr_libcnotify.h"
 #include "libhibr_libfcache.h"
 #include "libhibr_libfdata.h"
+#include "libhibr_libfdatetime.h"
 #include "libhibr_unused.h"
 
-#include "hibr_file_header.h"
+#include "hibr_memory_image_information.h"
 
 /* Creates an IO handle
  * Make sure the value io_handle is referencing, is set to NULL
@@ -180,23 +181,28 @@ int libhibr_io_handle_clear(
 	return( 1 );
 }
 
-/* Reads the file header
+/* Reads the memory image information
  * Returns 1 if successful or -1 on error
  */
-int libhibr_io_handle_read_file_header(
+int libhibr_io_handle_read_memory_image_information(
      libhibr_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
-	uint8_t *page_data             = NULL;
-	static char *function          = "libhibr_io_handle_read_file_header";
-	ssize_t read_count             = 0;
-	uint64_t page_size             = 0;
-	uint32_t file_header_data_size = 0;
+	uint8_t *page_data                          = NULL;
+	static char *function                       = "libhibr_io_handle_read_memory_image_information";
+	ssize_t read_count                          = 0;
+	uint64_t page_size                          = 0;
+	uint32_t memory_image_information_data_size = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	uint64_t value_64bit           = 0;
-	uint32_t value_32bit           = 0;
+	libcstring_system_character_t filetime_string[ 32 ];
+
+	libfdatetime_filetime_t *filetime           = NULL;
+	uint64_t value_64bit                        = 0;
+	uint32_t value_32bit                        = 0;
+	uint8_t value_8bit                          = 0;
+	int result                                  = 0;
 #endif
 
 	if( io_handle == NULL )
@@ -214,7 +220,7 @@ int libhibr_io_handle_read_file_header(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: reading file header at offset: 0.\n",
+		 "%s: reading memory image information at offset: 0.\n",
 		 function );
 	}
 #endif
@@ -228,7 +234,7 @@ int libhibr_io_handle_read_file_header(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek file header offset: 0.",
+		 "%s: unable to seek memory image information offset: 0.",
 		 function );
 
 		goto on_error;
@@ -242,7 +248,7 @@ int libhibr_io_handle_read_file_header(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_MEMORY,
 		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create file header data.",
+		 "%s: unable to create memory image information data.",
 		 function );
 
 		goto on_error;
@@ -259,7 +265,7 @@ int libhibr_io_handle_read_file_header(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read file header.",
+		 "%s: unable to read memory image information.",
 		 function );
 
 		goto on_error;
@@ -267,26 +273,26 @@ int libhibr_io_handle_read_file_header(
 /* TODO do empty page test */
 
 	byte_stream_copy_to_uint32_little_endian(
-	 ( (hibr_file_header_t *) page_data )->size,
-	 file_header_data_size );
+	 ( (hibr_memory_image_information_t *) page_data )->size,
+	 memory_image_information_data_size );
 
-	if( file_header_data_size > 0 )
+	if( memory_image_information_data_size > 0 )
 	{
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: file header data:\n",
+			 "%s: memory image information data:\n",
 			 function );
 			libcnotify_print_data(
 			 page_data,
-			 (size_t) file_header_data_size,
+			 (size_t) memory_image_information_data_size,
 			 0 );
 		}
 #endif
 /* TODO
 		if( memory_compare(
-		     ( (hibr_file_header_t *) page_data )->signature,
+		     ( (hibr_memory_image_information_t *) page_data )->signature,
 		     hibr_file_signature,
 		     8 ) != 0 )
 		{
@@ -300,219 +306,417 @@ int libhibr_io_handle_read_file_header(
 			goto on_error;
 		}
 */
-		if( file_header_data_size == sizeof( hibr_file_header_winxp_sp3_32bit_t ) )
+		if( memory_image_information_data_size == sizeof( hibr_memory_image_information_winxp_32bit_t ) )
 		{
-			io_handle->file_type = LIBHIBR_FILE_TYPE_WINDOWS_XP_SP3_32BIT;
+			io_handle->file_type = LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT;
 		}
-		else if( file_header_data_size == sizeof( hibr_file_header_win7_sp1_64bit_t ) )
+		else if( memory_image_information_data_size == sizeof( hibr_memory_image_information_winxp_64bit_t ) )
 		{
-			io_handle->file_type = LIBHIBR_FILE_TYPE_WINDOWS_7_SP1_64BIT;
+			io_handle->file_type = LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT;
 		}
-		if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_SP3_32BIT )
+		else if( memory_image_information_data_size == sizeof( hibr_memory_image_information_win7_32bit_t ) )
+		{
+			io_handle->file_type = LIBHIBR_FILE_TYPE_WINDOWS_7_32BIT;
+		}
+		else if( memory_image_information_data_size == sizeof( hibr_memory_image_information_win7_64bit_t ) )
+		{
+			io_handle->file_type = LIBHIBR_FILE_TYPE_WINDOWS_7_64BIT;
+		}
+		if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
 		{
 			byte_stream_copy_to_uint32_little_endian(
-			 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->page_size,
+			 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->page_size,
 			 page_size );
-
-			byte_stream_copy_to_uint32_little_endian(
-			 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->memory_blocks_page_number,
-			 io_handle->memory_blocks_page_number );
 		}
-		else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_SP1_64BIT )
+		else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT )
 		{
-			byte_stream_copy_to_uint64_little_endian(
-			 ( (hibr_file_header_win7_sp1_64bit_t *) page_data )->page_size,
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (hibr_memory_image_information_winxp_64bit_t *) page_data )->page_size,
+			 page_size );
+		}
+		else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_32BIT )
+		{
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (hibr_memory_image_information_win7_32bit_t *) page_data )->page_size,
+			 page_size );
+		}
+		else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_64BIT )
+		{
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (hibr_memory_image_information_win7_64bit_t *) page_data )->page_size,
 			 page_size );
 		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: signature\t\t\t\t: %c%c%c%c\n",
+			 "%s: signature\t\t: %c%c%c%c\n",
 			 function,
-			 ( (hibr_file_header_t *) page_data )->signature[ 0 ],
-			 ( (hibr_file_header_t *) page_data )->signature[ 1 ],
-			 ( (hibr_file_header_t *) page_data )->signature[ 2 ],
-			 ( (hibr_file_header_t *) page_data )->signature[ 3 ] );
+			 ( (hibr_memory_image_information_t *) page_data )->signature[ 0 ],
+			 ( (hibr_memory_image_information_t *) page_data )->signature[ 1 ],
+			 ( (hibr_memory_image_information_t *) page_data )->signature[ 2 ],
+			 ( (hibr_memory_image_information_t *) page_data )->signature[ 3 ] );
 
-			if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_SP3_32BIT )
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
 			{
 				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->version,
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->version,
 				 value_32bit );
 				libcnotify_printf(
-				 "%s: version\t\t\t\t: %" PRIu32 "\n",
+				 "%s: version\t\t: %" PRIu32 "\n",
 				 function,
 				 value_32bit );
 			}
-			else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_SP1_64BIT )
+			else if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_32BIT )
+			      || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_64BIT ) )
 			{
 				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_win7_sp1_64bit_t *) page_data )->image_type,
+				 ( (hibr_memory_image_information_win7_32bit_t *) page_data )->image_type,
 				 value_32bit );
 				libcnotify_printf(
-				 "%s: image type\t\t\t\t: %" PRIu32 "\n",
+				 "%s: image type\t\t: %" PRIu32 "\n",
 				 function,
 				 value_32bit );
 			}
 			byte_stream_copy_to_uint32_little_endian(
-			 ( (hibr_file_header_t *) page_data )->checksum,
+			 ( (hibr_memory_image_information_t *) page_data )->checksum,
 			 value_32bit );
 			libcnotify_printf(
-			 "%s: checksum\t\t\t\t: %" PRIu32 "\n",
+			 "%s: checksum\t\t: 0x%08" PRIx32 "\n",
 			 function,
 			 value_32bit );
 
 			libcnotify_printf(
-			 "%s: size\t\t\t\t: %" PRIu32 "\n",
+			 "%s: size\t\t\t: %" PRIu32 "\n",
 			 function,
-			 file_header_data_size );
+			 memory_image_information_data_size );
 
-			if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_SP3_32BIT )
+			if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
 			{
 				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->unknown1,
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->page_number,
 				 value_64bit );
 			}
-			else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_SP1_64BIT )
+			else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT )
 			{
 				byte_stream_copy_to_uint64_little_endian(
-				 ( (hibr_file_header_win7_sp1_64bit_t *) page_data )->unknown1,
+				 ( (hibr_memory_image_information_winxp_64bit_t *) page_data )->page_number,
+				 value_64bit );
+			}
+			else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_32BIT )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_win7_32bit_t *) page_data )->page_number,
+				 value_64bit );
+			}
+			else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_64BIT )
+			{
+				byte_stream_copy_to_uint64_little_endian(
+				 ( (hibr_memory_image_information_win7_64bit_t *) page_data )->page_number,
 				 value_64bit );
 			}
 			libcnotify_printf(
-			 "%s: unknown1\t\t\t\t: 0x%08" PRIx64 "\n",
+			 "%s: page number\t\t: %" PRIu64 "\n",
 			 function,
 			 value_64bit );
 
 			libcnotify_printf(
-			 "%s: page size\t\t\t\t: %" PRIu64 "\n",
+			 "%s: page size\t\t: %" PRIu64 "\n",
 			 function,
 			 page_size );
 
-			if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_SP3_32BIT )
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
 			{
-				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->image_type,
-				 value_32bit );
+				if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+				{
+					byte_stream_copy_to_uint32_little_endian(
+					 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->image_type,
+					 value_32bit );
+				}
+				else
+				{
+					byte_stream_copy_to_uint32_little_endian(
+					 ( (hibr_memory_image_information_winxp_64bit_t *) page_data )->image_type,
+					 value_32bit );
+				}
 				libcnotify_printf(
-				 "%s: image type\t\t\t\t: %" PRIu32 "\n",
-				 function,
-				 value_32bit );
-
-				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->unknown2,
-				 value_32bit );
-				libcnotify_printf(
-				 "%s: unknown2\t\t\t\t: 0x%08" PRIx32 "\n",
+				 "%s: image type\t\t: %" PRIu32 "\n",
 				 function,
 				 value_32bit );
 			}
-			byte_stream_copy_to_uint64_little_endian(
-			 ( (hibr_file_header_t *) page_data )->system_time,
-			 value_64bit );
-			libcnotify_printf(
-			 "%s: system time\t\t\t\t: 0x%08" PRIx64 "\n",
-			 function,
-			 value_64bit );
-
-			byte_stream_copy_to_uint64_little_endian(
-			 ( (hibr_file_header_t *) page_data )->interrupt_time,
-			 value_64bit );
-			libcnotify_printf(
-			 "%s: interrupt time\t\t\t: 0x%08" PRIx64 "\n",
-			 function,
-			 value_64bit );
-
-			byte_stream_copy_to_uint32_little_endian(
-			 ( (hibr_file_header_t *) page_data )->feature_flags,
-			 value_32bit );
-			libcnotify_printf(
-			 "%s: feature flags\t\t\t: 0x%08" PRIx32 "\n",
-			 function,
-			 value_32bit );
-
-			libcnotify_printf(
-			 "%s: hibernation flags\t\t\t: 0x%02" PRIx8 "\n",
-			 function,
-			 ( (hibr_file_header_t *) page_data )->hibernation_flags );
-
-			libcnotify_printf(
-			 "%s: unknown3:\n",
-			 function );
-			libcnotify_print_data(
-			 ( (hibr_file_header_t *) page_data )->unknown3,
-			 3,
-			 0 );
-
-			if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_SP3_32BIT )
+			if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
 			{
 				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->number_of_page_table_entries,
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->unknown1,
 				 value_32bit );
 				libcnotify_printf(
-				 "%s: number of page table entries\t: %" PRIu32 "\n",
+				 "%s: unknown1\t\t: 0x%08" PRIx32 "\n",
 				 function,
 				 value_32bit );
-
-				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->unknown4,
-				 value_32bit );
-				libcnotify_printf(
-				 "%s: unknown4\t\t\t\t: 0x%08" PRIx32 "\n",
-				 function,
-				 value_32bit );
-
+			}
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
 				byte_stream_copy_to_uint64_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->unknown5,
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->system_time,
 				 value_64bit );
-				libcnotify_printf(
-				 "%s: unknown5\t\t\t\t: 0x%08" PRIx64 "\n",
-				 function,
+			}
+			else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_32BIT )
+			{
+				byte_stream_copy_to_uint64_little_endian(
+				 ( (hibr_memory_image_information_win7_32bit_t *) page_data )->system_time,
 				 value_64bit );
+			}
+			else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_64BIT )
+			{
+				byte_stream_copy_to_uint64_little_endian(
+				 ( (hibr_memory_image_information_win7_64bit_t *) page_data )->system_time,
+				 value_64bit );
+			}
+			if( libfdatetime_filetime_initialize(
+			     &filetime,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 "%s: unable to create filetime.",
+				 function );
+
+				goto on_error;
+			}
+			if( libfdatetime_filetime_copy_from_64bit(
+			     filetime,
+			     value_64bit,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to copy byte stream to filetime.",
+				 function );
+
+				goto on_error;
+			}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			result = libfdatetime_filetime_copy_to_utf16_string(
+				  filetime,
+				  (uint16_t *) filetime_string,
+				  32,
+				  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
+				  error );
+#else
+			result = libfdatetime_filetime_copy_to_utf8_string(
+				  filetime,
+				  (uint8_t *) filetime_string,
+				  32,
+				  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
+				  error );
+#endif
+			if( result != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to copy filetime to string.",
+				 function );
+
+				goto on_error;
+			}
+			libcnotify_printf(
+			 "%s: system time\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+			 function,
+			 filetime_string );
+
+			if( libfdatetime_filetime_free(
+			     &filetime,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free filetime.",
+				 function );
+
+				goto on_error;
+			}
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
+				byte_stream_copy_to_uint64_little_endian(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->interrupt_time,
+				 value_64bit );
+			}
+			libcnotify_printf(
+			 "%s: interrupt time\t\t: 0x%08" PRIx64 "\n",
+			 function,
+			 value_64bit );
+
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->feature_flags,
+				 value_32bit );
+			}
+			libcnotify_printf(
+			 "%s: feature flags\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
+				value_8bit = ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->hibernation_flags;
+			}
+			libcnotify_printf(
+			 "%s: hibernation flags\t: 0x%02" PRIx8 "\n",
+			 function,
+			 value_8bit );
+
+			if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			{
+				libcnotify_printf(
+				 "%s: unknown2:\n",
+				 function );
+				libcnotify_print_data(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->unknown2,
+				 3,
+				 0 );
+			}
+			else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT )
+			{
+				libcnotify_printf(
+				 "%s: unknown1:\n",
+				 function );
+				libcnotify_print_data(
+				 ( (hibr_memory_image_information_winxp_64bit_t *) page_data )->unknown1,
+				 3,
+				 0 );
 
 				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->number_of_free_pages,
+				 ( (hibr_memory_image_information_winxp_64bit_t *) page_data )->unknown2,
 				 value_32bit );
 				libcnotify_printf(
-				 "%s: number of free pages\t\t: %" PRIu32 "\n",
+				 "%s: unknown2\t\t: 0x%08" PRIx32 "\n",
+				 function,
+				 value_32bit );
+			}
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->unknown3,
+				 value_32bit );
+			}
+			libcnotify_printf(
+			 "%s: unknown3\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->unknown4,
+				 value_32bit );
+			}
+			libcnotify_printf(
+			 "%s: unknown4\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
+				byte_stream_copy_to_uint64_little_endian(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->unknown5,
+				 value_64bit );
+			}
+			libcnotify_printf(
+			 "%s: unknown5\t\t: 0x%08" PRIx64 "\n",
+			 function,
+			 value_64bit );
+
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->number_of_free_pages,
+				 value_32bit );
+			}
+			libcnotify_printf(
+			 "%s: number of free pages\t: %" PRIu32 "\n",
+			 function,
+			 value_32bit );
+
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->unknown6,
+				 value_32bit );
+			}
+			libcnotify_printf(
+			 "%s: unknown6\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->unknown7,
+				 value_32bit );
+			}
+			libcnotify_printf(
+			 "%s: unknown7\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_64bit_t *) page_data )->unknown8,
+				 value_32bit );
+				libcnotify_printf(
+				 "%s: unknown8\t\t: 0x%08" PRIx32 "\n",
+				 function,
+				 value_32bit );
+			}
+			if( ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			 || ( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT ) )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->number_of_pages,
+				 value_32bit );
+			}
+			libcnotify_printf(
+			 "%s: number of pages\t: %" PRIu32 "\n",
+			 function,
+			 value_32bit );
+
+			if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_32BIT )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->unknown8,
+				 value_32bit );
+				libcnotify_printf(
+				 "%s: unknown8\t\t: 0x%08" PRIx32 "\n",
 				 function,
 				 value_32bit );
 
 				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->unknown6,
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->unknown9,
 				 value_32bit );
 				libcnotify_printf(
-				 "%s: unknown6\t\t\t\t: 0x%08" PRIx32 "\n",
-				 function,
-				 value_32bit );
-
-				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->unknown7,
-				 value_32bit );
-				libcnotify_printf(
-				 "%s: unknown7\t\t\t\t: 0x%08" PRIx32 "\n",
-				 function,
-				 value_32bit );
-
-				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->number_of_pages,
-				 value_32bit );
-				libcnotify_printf(
-				 "%s: number of pages\t\t\t: %" PRIu32 "\n",
-				 function,
-				 value_32bit );
-
-				libcnotify_printf(
-				 "%s: memory blocks page number\t\t: 0x%08" PRIx32 "\n",
-				 function,
-				 io_handle->memory_blocks_page_number );
-
-				byte_stream_copy_to_uint32_little_endian(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->unknown9,
-				 value_32bit );
-				libcnotify_printf(
-				 "%s: unknown9\t\t\t\t: 0x%08" PRIx32 "\n",
+				 "%s: unknown9\t\t: 0x%08" PRIx32 "\n",
 				 function,
 				 value_32bit );
 
@@ -520,7 +724,33 @@ int libhibr_io_handle_read_file_header(
 				 "%s: unknown10:\n",
 				 function );
 				libcnotify_print_data(
-				 ( (hibr_file_header_winxp_sp3_32bit_t *) page_data )->unknown10,
+				 ( (hibr_memory_image_information_winxp_32bit_t *) page_data )->unknown10,
+				 72,
+				 0 );
+			}
+			else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_XP_64BIT )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_64bit_t *) page_data )->unknown8,
+				 value_32bit );
+				libcnotify_printf(
+				 "%s: unknown8\t\t: 0x%08" PRIx32 "\n",
+				 function,
+				 value_32bit );
+
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (hibr_memory_image_information_winxp_64bit_t *) page_data )->unknown9,
+				 value_32bit );
+				libcnotify_printf(
+				 "%s: unknown9\t\t: 0x%08" PRIx32 "\n",
+				 function,
+				 value_32bit );
+
+				libcnotify_printf(
+				 "%s: unknown10:\n",
+				 function );
+				libcnotify_print_data(
+				 ( (hibr_memory_image_information_winxp_64bit_t *) page_data )->unknown10,
 				 72,
 				 0 );
 			}
@@ -559,6 +789,14 @@ int libhibr_io_handle_read_file_header(
 	return( 1 );
 
 on_error:
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( filetime != NULL )
+	{
+		libfdatetime_filetime_free(
+		 &filetime,
+		 NULL );
+	}
+#endif
 	if( page_data != NULL )
 	{
 		memory_free(
