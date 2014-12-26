@@ -10,8 +10,16 @@ Package: libhibr
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: libhibr-dbg
 Description: Library to access the Windows Hibernation File (hiberfil.sys) format
  libhibr is a library to access the Windows Hibernation File (hiberfil.sys) format.
+
+Package: libhibr-dbg
+Architecture: any
+Section: debug
+Depends: libhibr (= ${Source-Version}), ${misc:Depends}
+Description: Debugging symbols for libhibr
+ Debugging symbols for libhibr.
 
 Package: libhibr-dev
 Section: libdevel
