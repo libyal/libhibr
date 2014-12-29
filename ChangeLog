@@ -1,6 +1,11 @@
 TODO
 * update manuals
 
+20141229
+* updated dpkg files
+* updated dependencies
+* updated .gitignore
+
 20141202
 * moved compression to libfwnt
 

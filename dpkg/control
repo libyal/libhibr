@@ -1,13 +1,12 @@
 Source: libhibr
-Section: unknown
+Section: libs
 Priority: extra
 Maintainer: Joachim Metz <joachim.metz@gmail.com>
 Build-Depends: debhelper (>= 7), autotools-dev, libfuse-dev
-Standards-Version: 3.8.3
+Standards-Version: 3.9.5
 Homepage: https://github.com/libyal/libhibr/
 
 Package: libhibr
-Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Suggests: libhibr-dbg
@@ -17,21 +16,21 @@ Description: Library to access the Windows Hibernation File (hiberfil.sys) forma
 Package: libhibr-dbg
 Architecture: any
 Section: debug
-Depends: libhibr (= ${Source-Version}), ${misc:Depends}
+Depends: libhibr (= ${binary:Version}), ${misc:Depends}
 Description: Debugging symbols for libhibr
  Debugging symbols for libhibr.
 
 Package: libhibr-dev
 Section: libdevel
 Architecture: any
-Depends: libhibr (= ${Source-Version})
+Depends: libhibr (= ${binary:Version}), ${misc:Depends}
 Description: Header files and libraries for developing applications for libhibr
  Header files and libraries for developing applications for libhibr.
 
 Package: libhibr-tools
 Section: utils
 Architecture: any
-Depends: libhibr (= ${Source-Version}), ${shlibs:Depends}
+Depends: libhibr (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Several tools for reading Windows Hibernation Files (hiberfil.sys)
  Several tools for reading Windows Hibernation Files (hiberfil.sys).
 
