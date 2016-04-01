@@ -25,7 +25,7 @@ check_SCRIPTS = \
 EXTRA_DIST = \
 	$(check_SCRIPTS)
 
-check_PROGRAMS =  \
+check_PROGRAMS = \
 	hibr_test_open_close
 
 hibr_test_open_close_SOURCES = \
