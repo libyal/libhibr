@@ -42,7 +42,7 @@ struct mount_handle
 	 */
 	libhibr_file_t *input_file;
 
-	/* The nofication output stream
+	/* The notification output stream
 	 */
 	FILE *notify_stream;
 };

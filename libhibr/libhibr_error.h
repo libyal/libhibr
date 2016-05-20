@@ -64,11 +64,11 @@ int libhibr_error_backtrace_sprint(
      char *string,
      size_t size );
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBHIBR ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBHIBR_INTERNAL_ERROR_H ) */
 

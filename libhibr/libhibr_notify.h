@@ -53,11 +53,11 @@ LIBHIBR_EXTERN \
 int libhibr_notify_stream_close(
      libcerror_error_t **error );
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBHIBR ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBHIBR_NOTIFY_H ) */
 

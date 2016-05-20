@@ -44,7 +44,7 @@
 
 #include <libclocale.h>
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBCLOCALE ) */
 
-#endif
+#endif /* !defined( _LIBHIBR_LIBCLOCALE_H ) */
 

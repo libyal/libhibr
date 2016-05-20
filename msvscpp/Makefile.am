@@ -1,5 +1,7 @@
 MSVSCPP_FILES = \
 	dokan/dokan.vcproj \
+	hibr_test_get_version/hibr_test_get_version.vcproj \
+	hibr_test_open_close/hibr_test_open_close.vcproj \
 	hibrinfo/hibrinfo.vcproj \
 	hibrmount/hibrmount.vcproj \
 	libbfio/libbfio.vcproj \

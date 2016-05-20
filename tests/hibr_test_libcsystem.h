@@ -1,5 +1,6 @@
 /*
- * The libfdatetime header wrapper
+ * Library for system independent implementation of functionality
+ * for programs
  *
  * Copyright (C) 2012-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,38 +20,35 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBHIBR_LIBFDATETIME_H )
-#define _LIBHIBR_LIBFDATETIME_H
+#if !defined( _HIBR_TEST_LIBCSYSTEM_H )
+#define _HIBR_TEST_LIBCSYSTEM_H
 
-#include <common.h>
-
-/* Define HAVE_LOCAL_LIBFDATETIME for local use of libfdatetime
+/* Define HAVE_LOCAL_LIBCSYSTEM for local use of libcsystem
  */
-#if defined( HAVE_LOCAL_LIBFDATETIME )
+#if defined( HAVE_LOCAL_LIBCSYSTEM )
 
-#include <libfdatetime_date_time_values.h>
-#include <libfdatetime_definitions.h>
-#include <libfdatetime_fat_date_time.h>
-#include <libfdatetime_filetime.h>
-#include <libfdatetime_floatingtime.h>
-#include <libfdatetime_hfs_time.h>
-#include <libfdatetime_nsf_timedate.h>
-#include <libfdatetime_posix_time.h>
-#include <libfdatetime_systemtime.h>
-#include <libfdatetime_types.h>
+#include <libcsystem_definitions.h>
+#include <libcsystem_file_io.h>
+#include <libcsystem_getopt.h>
+#include <libcsystem_glob.h>
+#include <libcsystem_i18n.h>
+#include <libcsystem_signal.h>
+#include <libcsystem_string.h>
+#include <libcsystem_support.h>
+#include <libcsystem_unused.h>
 
 #else
 
-/* If libtool DLL support is enabled set LIBFDATETIME_DLL_IMPORT
- * before including libfdatetime.h
+/* If libtool DLL support is enabled set LIBCSYSTEM_DLL_IMPORT
+ * before including libcsystem.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBFDATETIME_DLL_IMPORT
+#define LIBCSYSTEM_DLL_IMPORT
 #endif
 
-#include <libfdatetime.h>
+#include <libcsystem.h>
 
-#endif /* defined( HAVE_LOCAL_LIBFDATETIME ) */
+#endif /* defined( HAVE_LOCAL_LIBCSYSTEM ) */
 
-#endif /* !defined( _LIBHIBR_LIBFDATETIME_H ) */
+#endif /* !defined( _HIBR_TEST_LIBCSYSTEM_H ) */
 
