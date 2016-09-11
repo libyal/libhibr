@@ -32,14 +32,6 @@
 #include "libhibr_libfcache.h"
 #include "libhibr_libfdata.h"
 
-#if defined( _MSC_VER ) || defined( __BORLANDC__ ) || defined( __MINGW32_VERSION ) || defined( __MINGW64_VERSION_MAJOR )
-
-/* This inclusion is needed otherwise some linkers
- * mess up exporting the metadata functions
- */
-#include "libhibr_metadata.h"
-#endif
-
 #if defined( __cplusplus )
 extern "C" {
 #endif

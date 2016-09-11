@@ -56,15 +56,15 @@ hibr_test_get_version_LDADD = \
 
 hibr_test_open_close_SOURCES = \
 	hibr_test_libcerror.h \
-	hibr_test_libhibr.h \
 	hibr_test_libcstring.h \
 	hibr_test_libcsystem.h \
+	hibr_test_libhibr.h \
+	hibr_test_macros.h \
 	hibr_test_open_close.c
 
 hibr_test_open_close_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
 	../libhibr/libhibr.la \
-	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@ \
 	@PTHREAD_LIBADD@
