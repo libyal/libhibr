@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="hibr_test_get_version"
-	ProjectGUID="{768BBAAA-B0A7-43B6-9E5E-189B7B72E64B}"
-	RootNamespace="hibr_test_get_version"
+	Name="hibr_test_error"
+	ProjectGUID="{7C4409F7-DC22-4E7A-A251-3F32026D3101}"
+	RootNamespace="hibr_test_error"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,7 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\tests\hibr_test_get_version.c"
+				RelativePath="..\..\tests\hibr_test_error.c"
 				>
 			</File>
 		</Filter>

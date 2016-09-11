@@ -28,13 +28,26 @@ EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	hibr_test_error \
 	hibr_test_get_version \
 	hibr_test_open_close
+
+hibr_test_error_SOURCES = \
+	hibr_test_error.c \
+	hibr_test_libcstring.h \
+	hibr_test_libhibr.h \
+	hibr_test_macros.h \
+	hibr_test_unused.h
+
+hibr_test_error_LDADD = \
+	../libhibr/libhibr.la \
+	@LIBCSTRING_LIBADD@
 
 hibr_test_get_version_SOURCES = \
 	hibr_test_get_version.c \
 	hibr_test_libcstring.h \
 	hibr_test_libhibr.h \
+	hibr_test_macros.h \
 	hibr_test_unused.h
 
 hibr_test_get_version_LDADD = \

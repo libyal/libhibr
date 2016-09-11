@@ -1,5 +1,6 @@
 MSVSCPP_FILES = \
 	dokan/dokan.vcproj \
+	hibr_test_error/hibr_test_error.vcproj \
 	hibr_test_get_version/hibr_test_get_version.vcproj \
 	hibr_test_open_close/hibr_test_open_close.vcproj \
 	hibrinfo/hibrinfo.vcproj \
@@ -23,17 +24,8 @@ MSVSCPP_FILES = \
 	libuna/libuna.vcproj \
 	libhibr.sln
 
-SCRIPT_FILES = \
-	scripts/vs2008_x64.sh \
-	scripts/vs2008_x64_sln.sed \
-	scripts/vs2008_x64_vcproj.sed \
-	scripts/vs2010_x64.sh \
-	scripts/vs2010_x64_sln.sed \
-	scripts/vs2010_x64_vcxproj.sed
-
 EXTRA_DIST = \
-	$(MSVSCPP_FILES) \
-	$(SCRIPT_FILES)
+	$(MSVSCPP_FILES)
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

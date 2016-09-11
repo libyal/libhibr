@@ -1,5 +1,5 @@
 /*
- * Library get version test program
+ * Library notification functions test program
  *
  * Copyright (C) 2012-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -25,36 +25,67 @@
 #include <stdlib.h>
 #endif
 
-#include "hibr_test_libcstring.h"
+#include "hibr_test_libcerror.h"
 #include "hibr_test_libhibr.h"
 #include "hibr_test_macros.h"
 #include "hibr_test_unused.h"
 
-/* Tests retrieving the library version
+/* Tests the libhibr_notify_set_verbose function
  * Returns 1 if successful or 0 if not
  */
-int hibr_test_get_version(
+int hibr_test_notify_set_verbose(
      void )
 {
-	const char *version_string = NULL;
-	int result                 = 0;
-
-	version_string = libhibr_get_version();
-
-	result = libcstring_narrow_string_compare(
-	          version_string,
-	          LIBHIBR_VERSION_STRING,
-	          9 );
-
-	HIBR_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
+	/* Test invocation of function only
+	 */
+	libhibr_notify_set_verbose(
 	 0 );
 
 	return( 1 );
+}
 
-on_error:
-	return( 0 );
+/* Tests the libhibr_notify_set_stream function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_notify_set_stream(
+     void )
+{
+	/* Test invocation of function only
+	 */
+	libhibr_notify_set_stream(
+	 NULL,
+	 NULL );
+
+	return( 1 );
+}
+
+/* Tests the libhibr_notify_stream_open function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_notify_stream_open(
+     void )
+{
+	/* Test invocation of function only
+	 */
+	libhibr_notify_stream_open(
+	 NULL,
+	 NULL );
+
+	return( 1 );
+}
+
+/* Tests the libhibr_notify_stream_close function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_notify_stream_close(
+     void )
+{
+	/* Test invocation of function only
+	 */
+	libhibr_notify_stream_close(
+	 NULL );
+
+	return( 1 );
 }
 
 /* The main program
@@ -73,8 +104,20 @@ int main(
 	HIBR_TEST_UNREFERENCED_PARAMETER( argv )
 
 	HIBR_TEST_RUN(
-	 "libhibr_get_version",
-	 hibr_test_get_version() )
+	 "libhibr_notify_set_verbose",
+	 hibr_test_notify_set_verbose() )
+
+	HIBR_TEST_RUN(
+	 "libhibr_notify_set_stream",
+	 hibr_test_notify_set_stream() )
+
+	HIBR_TEST_RUN(
+	 "libhibr_notify_stream_open",
+	 hibr_test_notify_stream_open() )
+
+	HIBR_TEST_RUN(
+	 "libhibr_notify_stream_close",
+	 hibr_test_notify_stream_close() )
 
 	return( EXIT_SUCCESS );
 

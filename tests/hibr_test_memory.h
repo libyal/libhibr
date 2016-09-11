@@ -1,5 +1,5 @@
 /*
- * The internal type definitions
+ * Memory allocation functions for testing
  *
  * Copyright (C) 2012-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,29 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBHIBR_INTERNAL_TYPES_H )
-#define _LIBHIBR_INTERNAL_TYPES_H
+#if !defined( _HIBR_TEST_MEMORY_H )
+#define _HIBR_TEST_MEMORY_H
 
 #include <common.h>
-#include <types.h>
 
-/* Define HAVE_LOCAL_LIBHIBR for local use of libhibr
- * The definitions in <libhibr/types.h> are copied here
- * for local use of libhibr
- */
-#if defined( HAVE_LOCAL_LIBHIBR )
+#if defined( __cplusplus )
+extern "C" {
+#endif
 
-/* The following type definitions hide internal data structures
- */
-#if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
-typedef struct libhibr_file {}	libhibr_file_t;
+#if defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ )
 
-#else
-typedef intptr_t libhibr_file_t;
+#define HAVE_HIBR_TEST_MEMORY		1
 
-#endif /* defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI ) */
+extern int hibr_test_malloc_attempts_before_fail;
 
-#endif /* defined( HAVE_LOCAL_LIBHIBR ) */
+extern int hibr_test_memcpy_attempts_before_fail;
 
-#endif /* !defined( _LIBHIBR_INTERNAL_TYPES_H ) */
+extern int hibr_test_memset_attempts_before_fail;
+
+extern int hibr_test_realloc_attempts_before_fail;
+
+#endif /* defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ ) */
+
+#if defined( __cplusplus )
+}
+#endif
+
+#endif /* !defined( _HIBR_TEST_MEMORY_H ) */
 
