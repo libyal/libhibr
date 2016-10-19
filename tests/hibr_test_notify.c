@@ -105,19 +105,19 @@ int main(
 
 	HIBR_TEST_RUN(
 	 "libhibr_notify_set_verbose",
-	 hibr_test_notify_set_verbose() )
+	 hibr_test_notify_set_verbose )
 
 	HIBR_TEST_RUN(
 	 "libhibr_notify_set_stream",
-	 hibr_test_notify_set_stream() )
+	 hibr_test_notify_set_stream )
 
 	HIBR_TEST_RUN(
 	 "libhibr_notify_stream_open",
-	 hibr_test_notify_stream_open() )
+	 hibr_test_notify_stream_open )
 
 	HIBR_TEST_RUN(
 	 "libhibr_notify_stream_close",
-	 hibr_test_notify_stream_close() )
+	 hibr_test_notify_stream_close )
 
 	return( EXIT_SUCCESS );
 

@@ -123,23 +123,23 @@ int main(
 
 	HIBR_TEST_RUN(
 	 "libhibr_error_free",
-	 hibr_test_error_free() )
+	 hibr_test_error_free );
 
 	HIBR_TEST_RUN(
 	 "libhibr_error_fprint",
-	 hibr_test_error_fprint() )
+	 hibr_test_error_fprint );
 
 	HIBR_TEST_RUN(
 	 "libhibr_error_sprint",
-	 hibr_test_error_sprint() )
+	 hibr_test_error_sprint );
 
 	HIBR_TEST_RUN(
 	 "libhibr_error_backtrace_fprint",
-	 hibr_test_error_backtrace_fprint() )
+	 hibr_test_error_backtrace_fprint );
 
 	HIBR_TEST_RUN(
 	 "libhibr_error_backtrace_sprint",
-	 hibr_test_error_backtrace_sprint() )
+	 hibr_test_error_backtrace_sprint );
 
 	return( EXIT_SUCCESS );
 

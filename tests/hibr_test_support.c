@@ -1,5 +1,5 @@
 /*
- * Library get version test program
+ * Library support functions test program
  *
  * Copyright (C) 2012-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -30,7 +30,7 @@
 #include "hibr_test_macros.h"
 #include "hibr_test_unused.h"
 
-/* Tests retrieving the library version
+/* Tests the libhibr_get_version function
  * Returns 1 if successful or 0 if not
  */
 int hibr_test_get_version(
@@ -74,7 +74,7 @@ int main(
 
 	HIBR_TEST_RUN(
 	 "libhibr_get_version",
-	 hibr_test_get_version() )
+	 hibr_test_get_version );
 
 	return( EXIT_SUCCESS );
 
