@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="hibr_test_open_close"
-	ProjectGUID="{27253316-93FE-42DA-936C-EA3E5AE3A432}"
-	RootNamespace="hibr_test_open_close"
+	Name="hibr_test_notify"
+	ProjectGUID="{688E283D-FB96-4AB1-B115-3F9F8894F4C1}"
+	RootNamespace="hibr_test_notify"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,7 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\tests\hibr_test_open_close.c"
+				RelativePath="..\..\tests\hibr_test_notify.c"
 				>
 			</File>
 		</Filter>
@@ -186,15 +186,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\tests\hibr_test_libcerror.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\tests\hibr_test_libcstring.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\hibr_test_libcsystem.h"
 				>
 			</File>
 			<File
@@ -203,6 +195,10 @@
 			</File>
 			<File
 				RelativePath="..\..\tests\hibr_test_macros.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\hibr_test_unused.h"
 				>
 			</File>
 		</Filter>
