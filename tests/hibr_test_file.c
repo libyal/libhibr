@@ -1,5 +1,5 @@
 /*
- * Library support functions test program
+ * Library file type testing program
  *
  * Copyright (C) 2012-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -24,6 +24,7 @@
 #include <narrow_string.h>
 #include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
@@ -35,18 +36,26 @@
 #include "hibr_test_libhibr.h"
 #include "hibr_test_libuna.h"
 #include "hibr_test_macros.h"
-#include "hibr_test_unused.h"
+#include "hibr_test_memory.h"
+
+#if SIZEOF_WCHAR_T != 2 && SIZEOF_WCHAR_T != 4
+#error Unsupported size of wchar_t
+#endif
+
+/* Define to make hibr_test_file generate verbose output
+#define HIBR_TEST_FILE_VERBOSE
+ */
 
 /* Retrieves source as a narrow string
  * Returns 1 if successful or -1 on error
  */
-int hibr_test_support_get_narrow_source(
+int hibr_test_file_get_narrow_source(
      const system_character_t *source,
      char *narrow_string,
      size_t narrow_string_size,
      libcerror_error_t **error )
 {
-	static char *function     = "hibr_test_support_get_narrow_source";
+	static char *function     = "hibr_test_file_get_narrow_source";
 	size_t narrow_source_size = 0;
 	size_t source_length      = 0;
 
@@ -240,13 +249,13 @@ int hibr_test_support_get_narrow_source(
 /* Retrieves source as a wide string
  * Returns 1 if successful or -1 on error
  */
-int hibr_test_support_get_wide_source(
+int hibr_test_file_get_wide_source(
      const system_character_t *source,
      wchar_t *wide_string,
      size_t wide_string_size,
      libcerror_error_t **error )
 {
-	static char *function   = "hibr_test_support_get_wide_source";
+	static char *function   = "hibr_test_file_get_wide_source";
 	size_t wide_source_size = 0;
 	size_t source_length    = 0;
 
@@ -386,14 +395,14 @@ int hibr_test_support_get_wide_source(
 		result = libuna_utf32_string_copy_from_utf8(
 		          (libuna_utf32_character_t *) wide_string,
 		          wide_string_size,
-		          (uint8_t *) source,
+		          (libuna_utf8_character_t *) source,
 		          source_length + 1,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_copy_from_utf8(
 		          (libuna_utf16_character_t *) wide_string,
 		          wide_string_size,
-		          (uint8_t *) source,
+		          (libuna_utf8_character_t *) source,
 		          source_length + 1,
 		          error );
 #endif
@@ -437,66 +446,435 @@ int hibr_test_support_get_wide_source(
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
-/* Tests the libhibr_get_version function
+/* Creates and opens a source file
+ * Returns 1 if successful or -1 on error
+ */
+int hibr_test_file_open_source(
+     libhibr_file_t **file,
+     const system_character_t *source,
+     libcerror_error_t **error )
+{
+	static char *function = "hibr_test_file_open_source";
+	int result            = 0;
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	if( source == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid source.",
+		 function );
+
+		return( -1 );
+	}
+	if( libhibr_file_initialize(
+	     file,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to initialize file.",
+		 function );
+
+		goto on_error;
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libhibr_file_open_wide(
+	          *file,
+	          source,
+	          LIBHIBR_OPEN_READ,
+	          error );
+#else
+	result = libhibr_file_open(
+	          *file,
+	          source,
+	          LIBHIBR_OPEN_READ,
+	          error );
+#endif
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
+		 "%s: unable to open file.",
+		 function );
+
+		goto on_error;
+	}
+	return( 1 );
+
+on_error:
+	if( *file != NULL )
+	{
+		libhibr_file_free(
+		 file,
+		 NULL );
+	}
+	return( -1 );
+}
+
+/* Closes and frees a source file
+ * Returns 1 if successful or -1 on error
+ */
+int hibr_test_file_close_source(
+     libhibr_file_t **file,
+     libcerror_error_t **error )
+{
+	static char *function = "hibr_test_file_close_source";
+	int result            = 0;
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	if( libhibr_file_close(
+	     *file,
+	     error ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_CLOSE_FAILED,
+		 "%s: unable to close file.",
+		 function );
+
+		result = -1;
+	}
+	if( libhibr_file_free(
+	     file,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free file.",
+		 function );
+
+		result = -1;
+	}
+	return( result );
+}
+
+/* Tests the libhibr_file_initialize function
  * Returns 1 if successful or 0 if not
  */
-int hibr_test_get_version(
+int hibr_test_file_initialize(
      void )
 {
-	const char *version_string = NULL;
-	int result                 = 0;
+	libcerror_error_t *error = NULL;
+	libhibr_file_t *file      = NULL;
+	int result               = 0;
 
-	version_string = libhibr_get_version();
+	/* Test libhibr_file_initialize
+	 */
+	result = libhibr_file_initialize(
+	          &file,
+	          &error );
 
-	result = narrow_string_compare(
-	          version_string,
-	          LIBHIBR_VERSION_STRING,
-	          9 );
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        HIBR_TEST_ASSERT_IS_NOT_NULL(
+         "file",
+         file );
+
+        HIBR_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	result = libhibr_file_free(
+	          &file,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        HIBR_TEST_ASSERT_IS_NULL(
+         "file",
+         file );
+
+        HIBR_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test error cases
+	 */
+	result = libhibr_file_initialize(
+	          NULL,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        HIBR_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	file = (libhibr_file_t *) 0x12345678UL;
+
+	result = libhibr_file_initialize(
+	          &file,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        HIBR_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	file = NULL;
+
+#if defined( HAVE_HIBR_TEST_MEMORY )
+
+	/* Test libhibr_file_initialize with malloc failing
+	 */
+	hibr_test_malloc_attempts_before_fail = 0;
+
+	result = libhibr_file_initialize(
+	          &file,
+	          &error );
+
+	if( hibr_test_malloc_attempts_before_fail != -1 )
+	{
+		hibr_test_malloc_attempts_before_fail = -1;
+
+		if( file != NULL )
+		{
+			libhibr_file_free(
+			 &file,
+			 NULL );
+		}
+	}
+	else
+	{
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "file",
+		 file );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	/* Test libhibr_file_initialize with memset failing
+	 */
+	hibr_test_memset_attempts_before_fail = 0;
+
+	result = libhibr_file_initialize(
+	          &file,
+	          &error );
+
+	if( hibr_test_memset_attempts_before_fail != -1 )
+	{
+		hibr_test_memset_attempts_before_fail = -1;
+
+		if( file != NULL )
+		{
+			libhibr_file_free(
+			 &file,
+			 NULL );
+		}
+	}
+	else
+	{
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "file",
+		 file );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#endif /* defined( HAVE_HIBR_TEST_MEMORY ) */
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( file != NULL )
+	{
+		libhibr_file_free(
+		 &file,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libhibr_file_free function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_file_free(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test error cases
+	 */
+	result = libhibr_file_free(
+	          NULL,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        HIBR_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libhibr_file_open functions
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_file_open(
+     const system_character_t *source )
+{
+	char narrow_source[ 256 ];
+
+	libcerror_error_t *error = NULL;
+	libhibr_file_t *file      = NULL;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = hibr_test_file_get_narrow_source(
+	          source,
+	          narrow_source,
+	          256,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        HIBR_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	result = libhibr_file_initialize(
+	          &file,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        HIBR_TEST_ASSERT_IS_NOT_NULL(
+         "file",
+         file );
+
+        HIBR_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test open
+	 */
+	result = libhibr_file_open(
+	          file,
+	          narrow_source,
+	          LIBHIBR_OPEN_READ,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        HIBR_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Clean up
+	 */
+	result = libhibr_file_close(
+	          file,
+	          &error );
 
 	HIBR_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
 	 0 );
 
-	return( 1 );
+        HIBR_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
 
-on_error:
-	return( 0 );
-}
-
-/* Tests the libhibr_get_access_flags_read function
- * Returns 1 if successful or 0 if not
- */
-int hibr_test_get_access_flags_read(
-     void )
-{
-	int access_flags = 0;
-
-	access_flags = libhibr_get_access_flags_read();
-
-	HIBR_TEST_ASSERT_EQUAL_INT(
-	 "access_flags",
-	 access_flags,
-	 LIBHIBR_ACCESS_FLAG_READ );
-
-	return( 1 );
-
-on_error:
-	return( 0 );
-}
-
-/* Tests the libhibr_get_codepage function
- * Returns 1 if successful or 0 if not
- */
-int hibr_test_get_codepage(
-     void )
-{
-	libcerror_error_t *error = NULL;
-	int codepage             = 0;
-	int result               = 0;
-
-	result = libhibr_get_codepage(
-	          &codepage,
+	result = libhibr_file_free(
+	          &file,
 	          &error );
 
 	HIBR_TEST_ASSERT_EQUAL_INT(
@@ -505,26 +883,12 @@ int hibr_test_get_codepage(
 	 1 );
 
         HIBR_TEST_ASSERT_IS_NULL(
+         "file",
+         file );
+
+        HIBR_TEST_ASSERT_IS_NULL(
          "error",
          error );
-
-	/* Test error cases
-	 */
-	result = libhibr_get_codepage(
-	          NULL,
-	          &error );
-
-	HIBR_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        HIBR_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
 
 	return( 1 );
 
@@ -534,148 +898,32 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	return( 0 );
-}
-
-/* Tests the libhibr_set_codepage function
- * Returns 1 if successful or 0 if not
- */
-int hibr_test_set_codepage(
-     void )
-{
-	libcerror_error_t *error = NULL;
-	int result               = 0;
-
-	result = libhibr_set_codepage(
-	          0,
-	          &error );
-
-	HIBR_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-        HIBR_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
-
-	/* Test error cases
-	 */
-	result = libhibr_set_codepage(
-	          -1,
-	          &error );
-
-	HIBR_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        HIBR_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
+	if( file != NULL )
 	{
-		libcerror_error_free(
-		 &error );
-	}
-	return( 0 );
-}
-
-/* Tests the libhibr_check_file_signature function
- * Returns 1 if successful or 0 if not
- */
-int hibr_test_check_file_signature(
-     const system_character_t *source )
-{
-	char narrow_source[ 256 ];
-
-	libcerror_error_t *error = NULL;
-	int result               = 0;
-
-	/* Initialize test
-	 */
-	result = hibr_test_support_get_narrow_source(
-	          source,
-	          narrow_source,
-	          256,
-	          &error );
-
-	HIBR_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-        HIBR_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
-
-	/* Test check file signature
-	 */
-	result = libhibr_check_file_signature(
-	          narrow_source,
-	          &error );
-
-	HIBR_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-        HIBR_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
-
-	/* Test error cases
-	 */
-	result = libhibr_check_file_signature(
-	          NULL,
-	          &error );
-
-	HIBR_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        HIBR_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
+		libhibr_file_free(
+		 &file,
+		 NULL );
 	}
 	return( 0 );
 }
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
-/* Tests the libhibr_check_file_signature_wide function
+/* Tests the libhibr_file_open_wide functions
  * Returns 1 if successful or 0 if not
  */
-int hibr_test_check_file_signature_wide(
+int hibr_test_file_open_wide(
      const system_character_t *source )
 {
 	wchar_t wide_source[ 256 ];
 
 	libcerror_error_t *error = NULL;
+	libhibr_file_t *file      = NULL;
 	int result               = 0;
 
 	/* Initialize test
 	 */
-	result = hibr_test_support_get_wide_source(
+	result = hibr_test_file_get_wide_source(
 	          source,
 	          wide_source,
 	          256,
@@ -690,10 +938,29 @@ int hibr_test_check_file_signature_wide(
          "error",
          error );
 
-	/* Test check file signature
+	result = libhibr_file_initialize(
+	          &file,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        HIBR_TEST_ASSERT_IS_NOT_NULL(
+         "file",
+         file );
+
+        HIBR_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test open
 	 */
-	result = libhibr_check_file_signature_wide(
+	result = libhibr_file_open_wide(
+	          file,
 	          wide_source,
+	          LIBHIBR_OPEN_READ,
 	          &error );
 
 	HIBR_TEST_ASSERT_EQUAL_INT(
@@ -705,23 +972,37 @@ int hibr_test_check_file_signature_wide(
          "error",
          error );
 
-	/* Test error cases
+	/* Clean up
 	 */
-	result = libhibr_check_file_signature_wide(
-	          NULL,
+	result = libhibr_file_close(
+	          file,
 	          &error );
 
 	HIBR_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 0 );
 
-        HIBR_TEST_ASSERT_IS_NOT_NULL(
+        HIBR_TEST_ASSERT_IS_NULL(
          "error",
          error );
 
-	libcerror_error_free(
-	 &error );
+	result = libhibr_file_free(
+	          &file,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        HIBR_TEST_ASSERT_IS_NULL(
+         "file",
+         file );
+
+        HIBR_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
 
 	return( 1 );
 
@@ -730,6 +1011,12 @@ on_error:
 	{
 		libcerror_error_free(
 		 &error );
+	}
+	if( file != NULL )
+	{
+		libhibr_file_free(
+		 &file,
+		 NULL );
 	}
 	return( 0 );
 }
@@ -748,8 +1035,11 @@ int main(
      char * const argv[] )
 #endif
 {
+	libcerror_error_t *error   = NULL;
 	system_character_t *source = NULL;
+	libhibr_file_t *file        = NULL;
 	system_integer_t option    = 0;
+	int result                 = 0;
 
 	while( ( option = libcsystem_getopt(
 	                   argc,
@@ -772,36 +1062,35 @@ int main(
 	{
 		source = argv[ optind ];
 	}
+#if defined( HAVE_DEBUG_OUTPUT ) && defined( HIBR_TEST_FILE_VERBOSE )
+	libhibr_notify_set_verbose(
+	 1 );
+	libhibr_notify_set_stream(
+	 stderr,
+	 NULL );
+#endif
 
 	HIBR_TEST_RUN(
-	 "libhibr_get_version",
-	 hibr_test_get_version );
+	 "libhibr_file_initialize",
+	 hibr_test_file_initialize );
 
 	HIBR_TEST_RUN(
-	 "libhibr_get_access_flags_read",
-	 hibr_test_get_access_flags_read );
-
-	HIBR_TEST_RUN(
-	 "libhibr_get_codepage",
-	 hibr_test_get_codepage );
-
-	HIBR_TEST_RUN(
-	 "libhibr_set_codepage",
-	 hibr_test_set_codepage );
+	 "libhibr_file_free",
+	 hibr_test_file_free );
 
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 	if( source != NULL )
 	{
 		HIBR_TEST_RUN_WITH_ARGS(
-		 "libhibr_check_file_signature",
-		 hibr_test_check_file_signature,
+		 "libhibr_file_open",
+		 hibr_test_file_open,
 		 source );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
 		HIBR_TEST_RUN_WITH_ARGS(
-		 "libhibr_check_file_signature_wide",
-		 hibr_test_check_file_signature_wide,
+		 "libhibr_file_open_wide",
+		 hibr_test_file_open_wide,
 		 source );
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
@@ -811,12 +1100,71 @@ int main(
 		/* TODO add test for libhibr_file_open_file_io_handle */
 
 #endif /* defined( LIBHIBR_HAVE_BFIO ) */
+
+		/* TODO add test for libhibr_file_close */
+
+		/* Initialize test
+		 */
+		result = hibr_test_file_open_source(
+		          &file,
+		          source,
+		          &error );
+
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 1 );
+
+	        HIBR_TEST_ASSERT_IS_NOT_NULL(
+	         "file",
+	         file );
+
+	        HIBR_TEST_ASSERT_IS_NULL(
+	         "error",
+	         error );
+
+/* TODO
+		HIBR_TEST_RUN_WITH_ARGS(
+		 "libhibr_file_open",
+		 hibr_test_file_open,
+		 file );
+*/
+
+		/* Clean up
+		 */
+		result = hibr_test_file_close_source(
+		          &file,
+		          &error );
+
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 0 );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+	         "file",
+	         file );
+
+	        HIBR_TEST_ASSERT_IS_NULL(
+	         "error",
+	         error );
 	}
 #endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
 
 	return( EXIT_SUCCESS );
 
 on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( file != NULL )
+	{
+		hibr_test_file_close_source(
+		 &file,
+		 NULL );
+	}
 	return( EXIT_FAILURE );
 }
 

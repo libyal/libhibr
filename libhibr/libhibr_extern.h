@@ -24,6 +24,10 @@
 
 #include <common.h>
 
+/* Define HAVE_LOCAL_LIBHIBR for local use of libhibr
+ */
+#if !defined( HAVE_LOCAL_LIBHIBR )
+
 /* If libtool DLL support is enabled set LIBHIBR_DLL_EXPORT
  * before including libhibr/extern.h
  */
@@ -33,5 +37,10 @@
 
 #include <libhibr/extern.h>
 
+#else
+#define LIBHIBR_EXTERN	extern
+
 #endif
+
+#endif /* !defined( _LIBHIBR_INTERNAL_EXTERN_H ) */
 

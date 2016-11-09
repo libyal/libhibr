@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -32,7 +31,6 @@ hibrinfo_SOURCES = \
 	hibrtools_libcerror.h \
 	hibrtools_libclocale.h \
 	hibrtools_libcnotify.h \
-	hibrtools_libcstring.h \
 	hibrtools_libcsystem.h \
 	hibrtools_libhibr.h \
 	hibrtools_libuna.h
@@ -43,7 +41,6 @@ hibrinfo_LDADD = \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
 	@LIBINTL@
 
 hibrmount_SOURCES = \
@@ -53,7 +50,6 @@ hibrmount_SOURCES = \
 	hibrtools_libcerror.h \
 	hibrtools_libclocale.h \
 	hibrtools_libcnotify.h \
-	hibrtools_libcstring.h \
 	hibrtools_libcsystem.h \
 	hibrtools_libhibr.h
 
@@ -64,7 +60,6 @@ hibrmount_LDADD = \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
 	@LIBINTL@
 
 MAINTAINERCLEANFILES = \

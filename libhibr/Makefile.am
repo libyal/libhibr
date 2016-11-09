@@ -2,7 +2,6 @@ AM_CPPFLAGS = \
 	-DLOCALEDIR=\"$(datadir)/locale\" \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -38,7 +37,6 @@ libhibr_la_SOURCES = \
 	libhibr_libcerror.h \
 	libhibr_libclocale.h \
 	libhibr_libcnotify.h \
-	libhibr_libcstring.h \
 	libhibr_libfcache.h \
 	libhibr_libfdata.h \
 	libhibr_libfdatetime.h \
@@ -50,7 +48,6 @@ libhibr_la_SOURCES = \
 	libhibr_unused.h
 
 libhibr_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \

@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -17,10 +16,12 @@ AM_CPPFLAGS = \
 
 TESTS = \
 	test_api_functions.sh \
+	test_api_types.sh \
 	test_hibrinfo.sh
 
 check_SCRIPTS = \
 	test_api_functions.sh \
+	test_api_types.sh \
 	test_hibrinfo.sh \
 	test_runner.sh
 
@@ -29,35 +30,50 @@ EXTRA_DIST = \
 
 check_PROGRAMS = \
 	hibr_test_error \
+	hibr_test_file \
 	hibr_test_notify \
 	hibr_test_open_close \
 	hibr_test_support
 
 hibr_test_error_SOURCES = \
 	hibr_test_error.c \
-	hibr_test_libcstring.h \
 	hibr_test_libhibr.h \
 	hibr_test_macros.h \
 	hibr_test_unused.h
 
 hibr_test_error_LDADD = \
+	../libhibr/libhibr.la
+
+hibr_test_file_SOURCES = \
+	hibr_test_file.c \
+	hibr_test_libcerror.h \
+	hibr_test_libclocale.h \
+	hibr_test_libcsystem.h \
+	hibr_test_libhibr.h \
+	hibr_test_libuna.h \
+	hibr_test_memory.c hibr_test_memory.h \
+	hibr_test_unused.h
+
+hibr_test_file_LDADD = \
+	@LIBCSYSTEM_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
 	../libhibr/libhibr.la \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
 
 hibr_test_notify_SOURCES = \
-	hibr_test_libcstring.h \
 	hibr_test_libhibr.h \
 	hibr_test_macros.h \
 	hibr_test_notify.c \
 	hibr_test_unused.h
 
 hibr_test_notify_LDADD = \
-	../libhibr/libhibr.la \
-	@LIBCSTRING_LIBADD@
+	../libhibr/libhibr.la
 
 hibr_test_open_close_SOURCES = \
 	hibr_test_libcerror.h \
-	hibr_test_libcstring.h \
 	hibr_test_libcsystem.h \
 	hibr_test_libhibr.h \
 	hibr_test_macros.h \
@@ -66,20 +82,27 @@ hibr_test_open_close_SOURCES = \
 hibr_test_open_close_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
 	../libhibr/libhibr.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
+	@LIBCERROR_LIBADD@
 	@PTHREAD_LIBADD@
 
 hibr_test_support_SOURCES = \
-	hibr_test_libcstring.h \
+	hibr_test_libcerror.h \
+	hibr_test_libclocale.h \
+	hibr_test_libcsystem.h \
 	hibr_test_libhibr.h \
+	hibr_test_libuna.h \
 	hibr_test_macros.h \
 	hibr_test_support.c \
 	hibr_test_unused.h
 
 hibr_test_support_LDADD = \
+	@LIBCSYSTEM_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
 	../libhibr/libhibr.la \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

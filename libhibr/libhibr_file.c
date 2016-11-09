@@ -21,7 +21,9 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libhibr_compressed_page_data.h"
 #include "libhibr_compressed_page_map.h"
@@ -33,7 +35,6 @@
 #include "libhibr_libbfio.h"
 #include "libhibr_libcerror.h"
 #include "libhibr_libcnotify.h"
-#include "libhibr_libcstring.h"
 #include "libhibr_libfcache.h"
 #include "libhibr_libfdata.h"
 
@@ -318,7 +319,7 @@ int libhibr_file_open(
 	if( libbfio_file_set_name(
 	     file_io_handle,
 	     filename,
-	     libcstring_narrow_string_length(
+	     narrow_string_length(
 	      filename ) + 1,
 	     error ) != 1 )
 	{
@@ -455,7 +456,7 @@ int libhibr_file_open_wide(
 	if( libbfio_file_set_name_wide(
 	     file_io_handle,
 	     filename,
-	     libcstring_wide_string_length(
+	     wide_string_length(
 	      filename ) + 1,
 	     error ) != 1 )
 	{

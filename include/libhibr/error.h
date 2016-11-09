@@ -39,7 +39,7 @@ enum LIBHIBR_ERROR_DOMAINS
 	LIBHIBR_ERROR_DOMAIN_INPUT			= (int) 'i',
 	LIBHIBR_ERROR_DOMAIN_MEMORY			= (int) 'm',
 	LIBHIBR_ERROR_DOMAIN_OUTPUT			= (int) 'o',
-	LIBHIBR_ERROR_DOMAIN_RUNTIME			= (int) 'r',
+	LIBHIBR_ERROR_DOMAIN_RUNTIME			= (int) 'r'
 };
 
 /* The argument error codes
@@ -208,6 +208,17 @@ enum LIBHIBR_MEMORY_ERROR
 	LIBHIBR_MEMORY_ERROR_SET_FAILED			= 3
 };
 
+/* The output error codes
+ */
+enum LIBHIBR_OUTPUT_ERROR
+{
+	LIBHIBR_OUTPUT_ERROR_GENERIC			= 0,
+
+	/* There is insuficient space to write the output
+	 */
+	LIBHIBR_OUTPUT_ERROR_INSUFFICIENT_SPACE		= 1
+};
+
 /* The runtime error codes
  * to signify errors regarding runtime processing
  */
@@ -276,16 +287,5 @@ enum LIBHIBR_RUNTIME_ERROR
 	LIBHIBR_RUNTIME_ERROR_ABORT_REQUESTED		= 15
 };
 
-/* The output error codes
- */
-enum LIBHIBR_OUTPUT_ERROR
-{
-	LIBHIBR_OUTPUT_ERROR_GENERIC			= 0,
-
-	/* There is insuficient space to write the output
-	 */
-	LIBHIBR_OUTPUT_ERROR_INSUFFICIENT_SPACE		= 1
-};
-
-#endif
+#endif /* !defined( _LIBHIBR_ERROR_H ) */
 

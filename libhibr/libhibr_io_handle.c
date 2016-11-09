@@ -22,6 +22,7 @@
 #include <common.h>
 #include <byte_stream.h>
 #include <memory.h>
+#include <system_string.h>
 #include <types.h>
 
 #include "libhibr_compressed_page_data.h"
@@ -196,7 +197,7 @@ int libhibr_io_handle_read_memory_image_information(
 	uint32_t memory_image_information_data_size = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	libcstring_system_character_t filetime_string[ 32 ];
+	system_character_t filetime_string[ 32 ];
 
 	libfdatetime_filetime_t *filetime           = NULL;
 	uint64_t value_64bit                        = 0;
@@ -502,7 +503,7 @@ int libhibr_io_handle_read_memory_image_information(
 
 				goto on_error;
 			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 			result = libfdatetime_filetime_copy_to_utf16_string(
 				  filetime,
 				  (uint16_t *) filetime_string,
@@ -529,7 +530,7 @@ int libhibr_io_handle_read_memory_image_information(
 				goto on_error;
 			}
 			libcnotify_printf(
-			 "%s: system time\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+			 "%s: system time\t\t: %" PRIs_SYSTEM " UTC\n",
 			 function,
 			 filetime_string );
 

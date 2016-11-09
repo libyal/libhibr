@@ -118,5 +118,5 @@ enum LIBHIBR_CODEPAGES
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBHIBR_CODEPAGE_H ) */
 

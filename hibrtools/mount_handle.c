@@ -199,7 +199,7 @@ int mount_handle_signal_abort(
  */
 int mount_handle_open_input(
      mount_handle_t *mount_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
 	static char *function = "mount_handle_open_input";
@@ -215,7 +215,7 @@ int mount_handle_open_input(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libhibr_file_open_wide(
 	     mount_handle->input_file,
 	     filename,
