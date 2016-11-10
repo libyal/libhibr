@@ -81,5 +81,5 @@ int libhibr_compressed_page_data_read(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBHIBR_COMPRESSED_PAGE_DATA_H ) */
 

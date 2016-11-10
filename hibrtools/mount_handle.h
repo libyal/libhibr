@@ -94,5 +94,5 @@ int mount_handle_get_media_size(
 }
 #endif
 
-#endif
+#endif /* !defined( _MOUNT_HANDLE_H ) */
 

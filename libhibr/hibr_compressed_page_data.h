@@ -59,5 +59,5 @@ struct hibr_compressed_page_data_header
 }
 #endif
 
-#endif
+#endif /* !defined( _HIBR_COMPRESSED_PAGE_DATA_H ) */
 

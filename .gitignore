@@ -126,7 +126,6 @@ stamp-h[1-9]
 /tests/hibr_test_error
 /tests/hibr_test_file
 /tests/hibr_test_notify
-/tests/hibr_test_open_close
 /tests/hibr_test_support
 /tests/input
 /tests/tmp*

@@ -45,5 +45,5 @@ void hibroutput_version_detailed_fprint(
 }
 #endif
 
-#endif
+#endif /* !defined( _HIBROUTPUT_H ) */
 

@@ -44,5 +44,5 @@ int libhibr_debug_print_read_offsets(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBHIBR_DEBUG_H ) */
 

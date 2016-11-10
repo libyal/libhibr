@@ -423,5 +423,5 @@ struct hibr_memory_image_information_win7_64bit
 }
 #endif
 
-#endif
+#endif /* !defined( _HIBR_MEMORY_IMAGE_INFORMATION_H ) */
 

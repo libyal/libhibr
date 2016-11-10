@@ -2,6 +2,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
 	@LIBCERROR_CPPFLAGS@ \
+	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
 	@LIBCNOTIFY_CPPFLAGS@ \
@@ -32,7 +33,6 @@ check_PROGRAMS = \
 	hibr_test_error \
 	hibr_test_file \
 	hibr_test_notify \
-	hibr_test_open_close \
 	hibr_test_support
 
 hibr_test_error_SOURCES = \
@@ -51,8 +51,8 @@ hibr_test_file_SOURCES = \
 	hibr_test_libcsystem.h \
 	hibr_test_libhibr.h \
 	hibr_test_libuna.h \
-	hibr_test_memory.c hibr_test_memory.h \
-	hibr_test_unused.h
+	hibr_test_macros.h \
+	hibr_test_memory.c hibr_test_memory.h
 
 hibr_test_file_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
@@ -61,7 +61,9 @@ hibr_test_file_LDADD = \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	../libhibr/libhibr.la \
-	@LIBCERROR_LIBADD@
+	@LIBCTHREADS_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@PTHREAD_LIBADD@
 
 hibr_test_notify_SOURCES = \
 	hibr_test_libhibr.h \
@@ -71,19 +73,6 @@ hibr_test_notify_SOURCES = \
 
 hibr_test_notify_LDADD = \
 	../libhibr/libhibr.la
-
-hibr_test_open_close_SOURCES = \
-	hibr_test_libcerror.h \
-	hibr_test_libcsystem.h \
-	hibr_test_libhibr.h \
-	hibr_test_macros.h \
-	hibr_test_open_close.c
-
-hibr_test_open_close_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
-	../libhibr/libhibr.la \
-	@LIBCERROR_LIBADD@
-	@PTHREAD_LIBADD@
 
 hibr_test_support_SOURCES = \
 	hibr_test_libcerror.h \

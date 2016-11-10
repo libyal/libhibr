@@ -98,5 +98,5 @@ struct hibr_compressed_page_map_entry
 }
 #endif
 
-#endif
+#endif /* !defined( _HIBR_COMPRESSED_PAGE_MAP_H ) */
 

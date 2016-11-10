@@ -66,5 +66,5 @@ int libhibr_compressed_page_map_read(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBHIBR_COMPRESSED_PAGE_MAP_H ) */
 

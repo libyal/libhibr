@@ -161,5 +161,5 @@ int libhibr_file_get_media_size(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBHIBR_INTERNAL_FILE_H ) */
 

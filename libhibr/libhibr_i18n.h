@@ -51,5 +51,5 @@ int libhibr_i18n_initialize(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBHIBR_I18N_H ) */
 

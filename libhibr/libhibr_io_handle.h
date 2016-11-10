@@ -86,5 +86,5 @@ int libhibr_io_handle_read_compressed_page_data(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBHIBR_IO_HANDLE_H ) */
 
