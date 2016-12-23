@@ -123,8 +123,11 @@ stamp-h[1-9]
 /hibrtools/hibrinfo
 /hibrtools/hibrmount
 /pyhibr/setup.py
+/tests/hibr_test_compressed_page_data
+/tests/hibr_test_compressed_page_map
 /tests/hibr_test_error
 /tests/hibr_test_file
+/tests/hibr_test_io_handle
 /tests/hibr_test_notify
 /tests/hibr_test_support
 /tests/input

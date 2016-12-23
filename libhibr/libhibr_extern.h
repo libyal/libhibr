@@ -38,9 +38,9 @@
 #include <libhibr/extern.h>
 
 #else
-#define LIBHIBR_EXTERN	extern
+#define LIBHIBR_EXTERN	/* extern */
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBHIBR ) */
 
 #endif /* !defined( _LIBHIBR_INTERNAL_EXTERN_H ) */
 

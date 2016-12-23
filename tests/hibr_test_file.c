@@ -1,5 +1,5 @@
 /*
- * Library file type testing program
+ * Library file type test program
  *
  * Copyright (C) 2012-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -30,9 +30,9 @@
 #include <stdlib.h>
 #endif
 
+#include "hibr_test_getopt.h"
 #include "hibr_test_libcerror.h"
 #include "hibr_test_libclocale.h"
-#include "hibr_test_libcsystem.h"
 #include "hibr_test_libhibr.h"
 #include "hibr_test_libuna.h"
 #include "hibr_test_macros.h"
@@ -584,11 +584,17 @@ int hibr_test_file_close_source(
 int hibr_test_file_initialize(
      void )
 {
-	libcerror_error_t *error = NULL;
-	libhibr_file_t *file     = NULL;
-	int result               = 0;
+	libcerror_error_t *error        = NULL;
+	libhibr_file_t *file            = NULL;
+	int result                      = 0;
 
-	/* Test file initialization
+#if defined( HAVE_HIBR_TEST_MEMORY )
+	int number_of_malloc_fail_tests = 1;
+	int number_of_memset_fail_tests = 1;
+	int test_number                 = 0;
+#endif
+
+	/* Test regular cases
 	 */
 	result = libhibr_file_initialize(
 	          &file,
@@ -664,79 +670,89 @@ int hibr_test_file_initialize(
 
 #if defined( HAVE_HIBR_TEST_MEMORY )
 
-	/* Test libhibr_file_initialize with malloc failing
-	 */
-	hibr_test_malloc_attempts_before_fail = 0;
-
-	result = libhibr_file_initialize(
-	          &file,
-	          &error );
-
-	if( hibr_test_malloc_attempts_before_fail != -1 )
+	for( test_number = 0;
+	     test_number < number_of_malloc_fail_tests;
+	     test_number++ )
 	{
-		hibr_test_malloc_attempts_before_fail = -1;
+		/* Test libhibr_file_initialize with malloc failing
+		 */
+		hibr_test_malloc_attempts_before_fail = test_number;
 
-		if( file != NULL )
+		result = libhibr_file_initialize(
+		          &file,
+		          &error );
+
+		if( hibr_test_malloc_attempts_before_fail != -1 )
 		{
-			libhibr_file_free(
-			 &file,
-			 NULL );
+			hibr_test_malloc_attempts_before_fail = -1;
+
+			if( file != NULL )
+			{
+				libhibr_file_free(
+				 &file,
+				 NULL );
+			}
+		}
+		else
+		{
+			HIBR_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
+
+			HIBR_TEST_ASSERT_IS_NULL(
+			 "file",
+			 file );
+
+			HIBR_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
+
+			libcerror_error_free(
+			 &error );
 		}
 	}
-	else
+	for( test_number = 0;
+	     test_number < number_of_memset_fail_tests;
+	     test_number++ )
 	{
-		HIBR_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+		/* Test libhibr_file_initialize with memset failing
+		 */
+		hibr_test_memset_attempts_before_fail = test_number;
 
-		HIBR_TEST_ASSERT_IS_NULL(
-		 "file",
-		 file );
+		result = libhibr_file_initialize(
+		          &file,
+		          &error );
 
-		HIBR_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
-		libcerror_error_free(
-		 &error );
-	}
-	/* Test libhibr_file_initialize with memset failing
-	 */
-	hibr_test_memset_attempts_before_fail = 0;
-
-	result = libhibr_file_initialize(
-	          &file,
-	          &error );
-
-	if( hibr_test_memset_attempts_before_fail != -1 )
-	{
-		hibr_test_memset_attempts_before_fail = -1;
-
-		if( file != NULL )
+		if( hibr_test_memset_attempts_before_fail != -1 )
 		{
-			libhibr_file_free(
-			 &file,
-			 NULL );
+			hibr_test_memset_attempts_before_fail = -1;
+
+			if( file != NULL )
+			{
+				libhibr_file_free(
+				 &file,
+				 NULL );
+			}
 		}
-	}
-	else
-	{
-		HIBR_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+		else
+		{
+			HIBR_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
 
-		HIBR_TEST_ASSERT_IS_NULL(
-		 "file",
-		 file );
+			HIBR_TEST_ASSERT_IS_NULL(
+			 "file",
+			 file );
 
-		HIBR_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+			HIBR_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
 
-		libcerror_error_free(
-		 &error );
+			libcerror_error_free(
+			 &error );
+		}
 	}
 #endif /* defined( HAVE_HIBR_TEST_MEMORY ) */
 
@@ -1216,6 +1232,215 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libhibr_file_signal_abort function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_file_signal_abort(
+     libhibr_file_t *file )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libhibr_file_signal_abort(
+	          file,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        HIBR_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test error cases
+	 */
+	result = libhibr_file_signal_abort(
+	          NULL,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        HIBR_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libhibr_file_get_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_file_get_offset(
+     libhibr_file_t *file )
+{
+	libcerror_error_t *error = NULL;
+	off64_t offset           = 0;
+	int offset_is_set        = 0;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libhibr_file_get_offset(
+	          file,
+	          &offset,
+	          &error );
+
+	HIBR_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	offset_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libhibr_file_get_offset(
+	          NULL,
+	          &offset,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( offset_is_set != 0 )
+	{
+		result = libhibr_file_get_offset(
+		          file,
+		          NULL,
+		          &error );
+
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libhibr_file_get_media_size function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_file_get_media_size(
+     libhibr_file_t *file )
+{
+	libcerror_error_t *error = NULL;
+	size64_t media_size      = 0;
+	int media_size_is_set    = 0;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libhibr_file_get_media_size(
+	          file,
+	          &media_size,
+	          &error );
+
+	HIBR_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	media_size_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libhibr_file_get_media_size(
+	          NULL,
+	          &media_size,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( media_size_is_set != 0 )
+	{
+		result = libhibr_file_get_media_size(
+		          file,
+		          NULL,
+		          &error );
+
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -1234,7 +1459,7 @@ int main(
 	system_integer_t option    = 0;
 	int result                 = 0;
 
-	while( ( option = libcsystem_getopt(
+	while( ( option = hibr_test_getopt(
 	                   argc,
 	                   argv,
 	                   _SYSTEM_STRING( "" ) ) ) != (system_integer_t) -1 )
@@ -1322,8 +1547,33 @@ int main(
 	        HIBR_TEST_ASSERT_IS_NULL(
 	         "error",
 	         error );
-		/* TODO: add tests */
 
+		HIBR_TEST_RUN_WITH_ARGS(
+		 "libhibr_file_signal_abort",
+		 hibr_test_file_signal_abort,
+		 file );
+
+#if defined( __GNUC__ )
+
+		/* TODO: add tests for libhibr_file_open_read */
+
+#endif /* defined( __GNUC__ ) */
+
+		/* TODO: add tests for libhibr_file_read_buffer */
+
+		/* TODO: add tests for libhibr_file_read_buffer_at_offset */
+
+		/* TODO: add tests for libhibr_file_seek_offset */
+
+		HIBR_TEST_RUN_WITH_ARGS(
+		 "libhibr_file_get_offset",
+		 hibr_test_file_get_offset,
+		 file );
+
+		HIBR_TEST_RUN_WITH_ARGS(
+		 "libhibr_file_get_media_size",
+		 hibr_test_file_get_media_size,
+		 file );
 
 		/* Clean up
 		 */

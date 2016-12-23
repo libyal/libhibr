@@ -10,7 +10,7 @@ $TestPrefix = Split-Path -path ${Pwd}.Path -parent
 $TestPrefix = Split-Path -path ${TestPrefix} -leaf
 $TestPrefix = ${TestPrefix}.Substring(3)
 
-$TestTypes = ""
+$TestTypes = "compressed_page_data compressed_page_map io_handle"
 $TestTypesWithInput = "file"
 
 $TestToolDirectory = "..\msvscpp\Release"
