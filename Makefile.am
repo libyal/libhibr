@@ -18,7 +18,6 @@ SUBDIRS = \
 	libfdatetime \
 	libfwnt \
 	libhibr \
-	libcsystem \
 	hibrtools \
 	po \
 	manuals \
@@ -116,7 +115,6 @@ splint:
 	(cd $(srcdir)/libfdatatime $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfwnt && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libhibr && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libcsystem && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/hibrtools && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/po && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/tests && $(MAKE) $(AM_MAKEFLAGS))

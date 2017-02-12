@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libhibr],
- [20161223],
+ [20170212],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -99,8 +99,8 @@ AX_LIBFWNT_CHECK_ENABLE
 dnl Check for library function support
 AX_LIBHIBR_CHECK_LOCAL
 
-dnl Check for enabling libcsystem for cross-platform C generic system functions
-AX_LIBCSYSTEM_CHECK_ENABLE
+dnl Check for hibrtools function support
+AX_HIBRTOOLS_CHECK_LOCAL
 
 dnl Check for libfuse Filesystem in Userspace (FUSE) support
 AX_LIBFUSE_CHECK_ENABLE
@@ -111,15 +111,6 @@ AS_IF(
  [AC_HEADER_TIME
  AC_CHECK_FUNCS([getegid geteuid time])
  ])
-
-dnl Check if hibrtools should be build as static executables
-AX_COMMON_CHECK_ENABLE_STATIC_EXECUTABLES
-
-dnl Check if libhibr should be build with verbose output
-AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
-
-dnl Check if libhibr should be build with debug output
-AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
 
 dnl Headers included in various places
 AC_CHECK_HEADERS([stdarg.h varargs.h])
@@ -134,29 +125,6 @@ AS_IF(
 dnl Check for test function support
 AX_TESTS_CHECK_LOCAL
 
-dnl Check if DLL support is needed
-AS_IF(
- [test "x$enable_shared" = xyes],
- [AS_CASE(
-  [$host],
-  [*cygwin* | *mingw*],
-  [AC_DEFINE(
-   [HAVE_DLLMAIN],
-   [1],
-   [Define to 1 to enable the DllMain function.])
-  AC_SUBST(
-   [HAVE_DLLMAIN],
-   [1])
-
-  AS_IF(
-   [test "x$ac_cv_enable_static_executables" = xno],
-   [AC_SUBST(
-    [LIBHIBR_DLL_IMPORT],
-    ["-DLIBHIBR_DLL_IMPORT"])
-   ])
-  ])
- ])
-
 dnl Check if requires and build requires should be set in spec file
 AS_IF(
  [test "x$ac_cv_libcerror" = xyes || test "x$ac_cv_libcthreads" = xyes || test "x$ac_cv_libcdata" = xyes || test "x$ac_cv_libclocale" = xyes || test "x$ac_cv_libcnotify" = xyes || test "x$ac_cv_libcsplit" = xyes || test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libcfile" = xyes || test "x$ac_cv_libcpath" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfcache" = xyes || test "x$ac_cv_libfdata" = xyes || test "x$ac_cv_libfdatetime" = xyes || test "x$ac_cv_libfwnt" = xyes],
@@ -169,7 +137,7 @@ AS_IF(
  ])
 
 AS_IF(
- [test "x$ac_cv_libcsystem" = xyes || test "x$ac_cv_libfuse" != xno],
+ [test "x$ac_cv_libfuse" != xno],
  [AC_SUBST(
   [libhibr_spec_tools_build_requires],
   [BuildRequires:])
@@ -209,7 +177,6 @@ AC_CONFIG_FILES([libfdata/Makefile])
 AC_CONFIG_FILES([libfdatetime/Makefile])
 AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libhibr/Makefile])
-AC_CONFIG_FILES([libcsystem/Makefile])
 AC_CONFIG_FILES([hibrtools/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([po/Makevars])
@@ -250,7 +217,6 @@ Building:
    libfdata support:                          $ac_cv_libfdata
    libfdatetime support:                      $ac_cv_libfdatetime
    libfwnt support:                           $ac_cv_libfwnt
-   libcsystem support:                        $ac_cv_libcsystem
    FUSE support:                              $ac_cv_libfuse
 
 Features:

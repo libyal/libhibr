@@ -13,7 +13,6 @@ AM_CPPFLAGS = \
 	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
-	@LIBCSYSTEM_CPPFLAGS@ \
 	@LIBFUSE_CPPFLAGS@ \
 	@LIBHIBR_DLL_IMPORT@
 
@@ -24,41 +23,45 @@ bin_PROGRAMS = \
 	hibrmount
 
 hibrinfo_SOURCES = \
-	info_handle.c info_handle.h \
 	hibrinfo.c \
-	hibroutput.c hibroutput.h \
+	hibrtools_getopt.c hibrtools_getopt.h \
+	hibrtools_i18n.h \
 	hibrtools_libbfio.h \
 	hibrtools_libcerror.h \
 	hibrtools_libclocale.h \
 	hibrtools_libcnotify.h \
-	hibrtools_libcsystem.h \
 	hibrtools_libhibr.h \
-	hibrtools_libuna.h
+	hibrtools_libuna.h \
+	hibrtools_output.c hibrtools_output.h \
+	hibrtools_signal.c hibrtools_signal.h \
+	hibrtools_unused.h \
+	info_handle.c info_handle.h
 
 hibrinfo_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
-	../libhibr/libhibr.la \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
+	../libhibr/libhibr.la \
 	@LIBCERROR_LIBADD@ \
 	@LIBINTL@
 
 hibrmount_SOURCES = \
-	mount_handle.c mount_handle.h \
 	hibrmount.c \
-	hibroutput.c hibroutput.h \
+	hibrtools_getopt.c hibrtools_getopt.h \
+	hibrtools_i18n.h \
 	hibrtools_libcerror.h \
 	hibrtools_libclocale.h \
 	hibrtools_libcnotify.h \
-	hibrtools_libcsystem.h \
-	hibrtools_libhibr.h
+	hibrtools_libhibr.h \
+	hibrtools_output.c hibrtools_output.h \
+	hibrtools_signal.c hibrtools_signal.h \
+	hibrtools_unused.h \
+	mount_handle.c mount_handle.h
 
 hibrmount_LDADD = \
 	@LIBFUSE_LIBADD@ \
-	@LIBCSYSTEM_LIBADD@ \
-	../libhibr/libhibr.la \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
+	../libhibr/libhibr.la \
 	@LIBCERROR_LIBADD@ \
 	@LIBINTL@
 

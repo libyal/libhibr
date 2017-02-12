@@ -19,16 +19,22 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _HIBROUTPUT_H )
-#define _HIBROUTPUT_H
+#if !defined( _HIBRTOOLS_OUTPUT_H )
+#define _HIBRTOOLS_OUTPUT_H
 
 #include <common.h>
 #include <file_stream.h>
 #include <types.h>
 
+#include "hibrtools_libcerror.h"
+
 #if defined( __cplusplus )
 extern "C" {
 #endif
+
+int hibrtools_output_initialize(
+     int stdio_mode,
+     libcerror_error_t **error );
 
 void hibroutput_copyright_fprint(
       FILE *stream );
@@ -45,5 +51,5 @@ void hibroutput_version_detailed_fprint(
 }
 #endif
 
-#endif /* !defined( _HIBROUTPUT_H ) */
+#endif /* !defined( _HIBRTOOLS_OUTPUT_H ) */
 

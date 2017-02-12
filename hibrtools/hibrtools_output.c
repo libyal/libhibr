@@ -23,14 +23,72 @@
 #include <file_stream.h>
 #include <types.h>
 
-#include "hibroutput.h"
+#include "hibrtools_i18n.h"
 #include "hibrtools_libbfio.h"
 #include "hibrtools_libcerror.h"
 #include "hibrtools_libclocale.h"
 #include "hibrtools_libcnotify.h"
-#include "hibrtools_libcsystem.h"
 #include "hibrtools_libhibr.h"
 #include "hibrtools_libuna.h"
+#include "hibrtools_output.h"
+
+/* Initializes output settings
+ * Returns 1 if successful or -1 on error
+ */
+int hibrtools_output_initialize(
+     int stdio_mode,
+     libcerror_error_t **error )
+{
+	static char *function = "hibrtools_output_initialize";
+
+	if( ( stdio_mode != _IOFBF )
+	 && ( stdio_mode != _IOLBF )
+	 && ( stdio_mode != _IONBF ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported standard IO mode.",
+		 function );
+
+		return( -1 );
+	}
+#if !defined( __BORLANDC__ )
+	if( setvbuf(
+	     stdout,
+	     NULL,
+	     stdio_mode,
+	     0 ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set IO mode of stdout.",
+		 function );
+
+		return( -1 );
+	}
+	if( setvbuf(
+	     stderr,
+	     NULL,
+	     stdio_mode,
+	     0 ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set IO mode of stderr.",
+		 function );
+
+		return( -1 );
+	}
+#endif /* !defined( __BORLANDC__ ) */
+
+	return( 1 );
+}
 
 /* Prints the copyright information
  */

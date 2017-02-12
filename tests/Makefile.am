@@ -15,18 +15,16 @@ AM_CPPFLAGS = \
 	@LIBFDATA_CPPFLAGS@ \
 	@LIBFDATETIME_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
-	@LIBHIBR_DLL_IMPORT@ \
-	@PTHREAD_CPPFLAGS@
+	@PTHREAD_CPPFLAGS@ \
+	@LIBHIBR_DLL_IMPORT@
 
 TESTS = \
-	test_api_functions.sh \
-	test_api_types.sh \
+	test_library.sh \
 	test_hibrinfo.sh
 
 check_SCRIPTS = \
-	test_api_functions.sh \
-	test_api_types.sh \
 	test_hibrinfo.sh \
+	test_library.sh \
 	test_runner.sh
 
 EXTRA_DIST = \

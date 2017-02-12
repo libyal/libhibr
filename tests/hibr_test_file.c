@@ -1285,6 +1285,334 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libhibr_file_read_buffer function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_file_read_buffer(
+     libhibr_file_t *file )
+{
+	uint8_t buffer[ 16 ];
+
+	libcerror_error_t *error = NULL;
+	size64_t size            = 0;
+	ssize_t read_count       = 0;
+	off64_t offset           = 0;
+
+	/* Determine size
+	 */
+	offset = libhibr_file_seek_offset(
+	          file,
+	          0,
+	          SEEK_END,
+	          &error );
+
+	HIBR_TEST_ASSERT_NOT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	size = (size64_t) offset;
+
+	/* Reset offset to 0
+	 */
+	offset = libhibr_file_seek_offset(
+	          file,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 0 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	if( size > 16 )
+	{
+		read_count = libhibr_file_read_buffer(
+		              file,
+		              buffer,
+		              16,
+		              &error );
+
+		HIBR_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) 16 );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+	}
+/* TODO read on size boundary */
+/* TODO read beyond size boundary */
+
+	/* Reset offset to 0
+	 */
+	offset = libhibr_file_seek_offset(
+	          file,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 0 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	read_count = libhibr_file_read_buffer(
+	              NULL,
+	              buffer,
+	              16,
+	              &error );
+
+	HIBR_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	read_count = libhibr_file_read_buffer(
+	              file,
+	              NULL,
+	              16,
+	              &error );
+
+	HIBR_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	read_count = libhibr_file_read_buffer(
+	              file,
+	              buffer,
+	              (size_t) SSIZE_MAX + 1,
+	              &error );
+
+	HIBR_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libhibr_file_seek_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_file_seek_offset(
+     libhibr_file_t *file )
+{
+	libcerror_error_t *error = NULL;
+	size64_t size            = 0;
+	off64_t offset           = 0;
+
+	/* Test regular cases
+	 */
+	offset = libhibr_file_seek_offset(
+	          file,
+	          0,
+	          SEEK_END,
+	          &error );
+
+	HIBR_TEST_ASSERT_NOT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	size = (size64_t) offset;
+
+	offset = libhibr_file_seek_offset(
+	          file,
+	          1024,
+	          SEEK_SET,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 1024 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	offset = libhibr_file_seek_offset(
+	          file,
+	          -512,
+	          SEEK_CUR,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 512 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	offset = libhibr_file_seek_offset(
+	          file,
+	          (off64_t) ( size + 512 ),
+	          SEEK_SET,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) ( size + 512 ) );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Reset offset to 0
+	 */
+	offset = libhibr_file_seek_offset(
+	          file,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 0 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	offset = libhibr_file_seek_offset(
+	          NULL,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	offset = libhibr_file_seek_offset(
+	          file,
+	          -1,
+	          SEEK_SET,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	offset = libhibr_file_seek_offset(
+	          file,
+	          -1,
+	          SEEK_CUR,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	offset = libhibr_file_seek_offset(
+	          file,
+	          (off64_t) ( -1 * ( size + 1 ) ),
+	          SEEK_END,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
 /* Tests the libhibr_file_get_offset function
  * Returns 1 if successful or 0 if not
  */
@@ -1559,11 +1887,17 @@ int main(
 
 #endif /* defined( __GNUC__ ) */
 
-		/* TODO: add tests for libhibr_file_read_buffer */
+		HIBR_TEST_RUN_WITH_ARGS(
+		 "libhibr_file_read_buffer",
+		 hibr_test_file_read_buffer,
+		 file );
 
 		/* TODO: add tests for libhibr_file_read_buffer_at_offset */
 
-		/* TODO: add tests for libhibr_file_seek_offset */
+		HIBR_TEST_RUN_WITH_ARGS(
+		 "libhibr_file_seek_offset",
+		 hibr_test_file_seek_offset,
+		 file );
 
 		HIBR_TEST_RUN_WITH_ARGS(
 		 "libhibr_file_get_offset",

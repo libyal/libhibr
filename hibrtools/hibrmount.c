@@ -61,13 +61,15 @@
 
 #endif /* defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE ) */
 
-#include "mount_handle.h"
-#include "hibroutput.h"
+#include "hibrtools_getopt.h"
 #include "hibrtools_libcerror.h"
 #include "hibrtools_libclocale.h"
 #include "hibrtools_libcnotify.h"
-#include "hibrtools_libcsystem.h"
 #include "hibrtools_libhibr.h"
+#include "hibrtools_output.h"
+#include "hibrtools_signal.h"
+#include "hibrtools_unused.h"
+#include "mount_handle.h"
 
 mount_handle_t *hibrmount_mount_handle = NULL;
 int hibrmount_abort                    = 0;
@@ -99,12 +101,12 @@ void usage_fprint(
 /* Signal handler for hibrmount
  */
 void hibrmount_signal_handler(
-      libcsystem_signal_t signal LIBCSYSTEM_ATTRIBUTE_UNUSED )
+      hibrtools_signal_t signal HIBRTOOLS_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
 	static char *function    = "hibrmount_signal_handler";
 
-	LIBCSYSTEM_UNREFERENCED_PARAMETER( signal )
+	HIBRTOOLS_UNREFERENCED_PARAMETER( signal )
 
 	hibrmount_abort = 1;
 
@@ -126,8 +128,13 @@ void hibrmount_signal_handler(
 	}
 	/* Force stdin to close otherwise any function reading it will remain blocked
 	 */
-	if( libcsystem_file_io_close(
+#if defined( WINAPI ) && !defined( __CYGWIN__ )
+	if( _close(
 	     0 ) != 0 )
+#else
+	if( close(
+	     0 ) != 0 )
+#endif
 	{
 		libcnotify_printf(
 		 "%s: unable to close stdin.\n",
@@ -359,16 +366,16 @@ int hibrmount_fuse_readdir(
      const char *path,
      void *buffer,
      fuse_fill_dir_t filler,
-     off_t offset LIBCSYSTEM_ATTRIBUTE_UNUSED,
-     struct fuse_file_info *file_info LIBCSYSTEM_ATTRIBUTE_UNUSED )
+     off_t offset HIBRTOOLS_ATTRIBUTE_UNUSED,
+     struct fuse_file_info *file_info HIBRTOOLS_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
 	static char *function    = "hibrmount_fuse_readdir";
 	size_t path_length       = 0;
 	int result               = 0;
 
-	LIBCSYSTEM_UNREFERENCED_PARAMETER( offset )
-	LIBCSYSTEM_UNREFERENCED_PARAMETER( file_info )
+	HIBRTOOLS_UNREFERENCED_PARAMETER( offset )
+	HIBRTOOLS_UNREFERENCED_PARAMETER( file_info )
 
 	if( path == NULL )
 	{
@@ -624,12 +631,12 @@ on_error:
 /* Cleans up when fuse is done
  */
 void hibrmount_fuse_destroy(
-      void *private_data LIBCSYSTEM_ATTRIBUTE_UNUSED )
+      void *private_data HIBRTOOLS_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
 	static char *function    = "hibrmount_fuse_destroy";
 
-	LIBCSYSTEM_UNREFERENCED_PARAMETER( private_data )
+	HIBRTOOLS_UNREFERENCED_PARAMETER( private_data )
 
 	if( hibrmount_mount_handle != NULL )
 	{
@@ -703,13 +710,13 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( libcsystem_initialize(
+	if( hibrtools_output_initialize(
              _IONBF,
              &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to initialize system values.\n" );
+		 "Unable to initialize output settings.\n" );
 
 		goto on_error;
 	}
@@ -717,7 +724,7 @@ int main( int argc, char * const argv[] )
 	 stdout,
 	 program );
 
-	while( ( option = libcsystem_getopt(
+	while( ( option = hibrtools_getopt(
 	                   argc,
 	                   argv,
 	                   _SYSTEM_STRING( "hvVX:" ) ) ) != (system_integer_t) -1 )
