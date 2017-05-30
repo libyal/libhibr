@@ -113,7 +113,6 @@ stamp-h[1-9]
 /common/config.h.in
 /common/types.h
 /dpkg/changelog
-/dpkg/copyright
 /include/libhibr.h
 /include/libhibr/definitions.h
 /include/libhibr/features.h

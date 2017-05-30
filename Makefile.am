@@ -29,11 +29,10 @@ DPKG_FILES = \
 	dpkg/compat \
 	dpkg/control \
 	dpkg/copyright \
-	dpkg/copyright.in \
 	dpkg/rules \
-	dpkg/libhibr-dev.docs \
-	dpkg/libhibr.docs \
-	dpkg/libhibr-tools.docs \
+	dpkg/libhibr-dev.install \
+	dpkg/libhibr.install \
+	dpkg/libhibr-tools.install \
 	dpkg/source/format
 
 GETTEXT_FILES = \
