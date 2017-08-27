@@ -1881,11 +1881,11 @@ int main(
 		 hibr_test_file_signal_abort,
 		 file );
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBHIBR_DLL_IMPORT )
 
 		/* TODO: add tests for libhibr_file_open_read */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBHIBR_DLL_IMPORT ) */
 
 		HIBR_TEST_RUN_WITH_ARGS(
 		 "libhibr_file_read_buffer",
