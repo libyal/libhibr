@@ -64,13 +64,13 @@ int hibr_test_compressed_page_data_initialize(
 	 result,
 	 1 );
 
-        HIBR_TEST_ASSERT_IS_NOT_NULL(
-         "compressed_page_data",
-         compressed_page_data );
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "compressed_page_data",
+	 compressed_page_data );
 
-        HIBR_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libhibr_compressed_page_data_free(
 	          &compressed_page_data,
@@ -81,13 +81,13 @@ int hibr_test_compressed_page_data_initialize(
 	 result,
 	 1 );
 
-        HIBR_TEST_ASSERT_IS_NULL(
-         "compressed_page_data",
-         compressed_page_data );
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "compressed_page_data",
+	 compressed_page_data );
 
-        HIBR_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -100,9 +100,9 @@ int hibr_test_compressed_page_data_initialize(
 	 result,
 	 -1 );
 
-        HIBR_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -118,9 +118,9 @@ int hibr_test_compressed_page_data_initialize(
 	 result,
 	 -1 );
 
-        HIBR_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -252,9 +252,9 @@ int hibr_test_compressed_page_data_free(
 	 result,
 	 -1 );
 
-        HIBR_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
