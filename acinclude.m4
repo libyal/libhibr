@@ -54,7 +54,6 @@ AC_DEFUN([AX_HIBRTOOLS_CHECK_LOCAL],
     [AC_CHECK_FUNCS([getegid geteuid time])
   ])
 
-
   dnl Check if tools should be build as static executables
   AX_COMMON_CHECK_ENABLE_STATIC_EXECUTABLES
 

@@ -5,19 +5,18 @@ Summary: Library to access the Windows Hibernation File (hiberfil.sys) format
 Group: System Environment/Libraries
 License: LGPL
 Source: %{name}-%{version}.tar.gz
-URL: https://github.com/libyal/libhibr/
+URL: https://github.com/libyal/libhibr
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 @libhibr_spec_requires@ @ax_libbfio_spec_requires@ @ax_libcdata_spec_requires@ @ax_libcerror_spec_requires@ @ax_libcfile_spec_requires@ @ax_libclocale_spec_requires@ @ax_libcnotify_spec_requires@ @ax_libcpath_spec_requires@ @ax_libcsplit_spec_requires@ @ax_libcthreads_spec_requires@ @ax_libfcache_spec_requires@ @ax_libfdata_spec_requires@ @ax_libfdatetime_spec_requires@ @ax_libfwnt_spec_requires@ @ax_libuna_spec_requires@
 @libhibr_spec_build_requires@ @ax_libbfio_spec_build_requires@ @ax_libcdata_spec_build_requires@ @ax_libcerror_spec_build_requires@ @ax_libcfile_spec_build_requires@ @ax_libclocale_spec_build_requires@ @ax_libcnotify_spec_build_requires@ @ax_libcpath_spec_build_requires@ @ax_libcsplit_spec_build_requires@ @ax_libcthreads_spec_build_requires@ @ax_libfcache_spec_build_requires@ @ax_libfdata_spec_build_requires@ @ax_libfdatetime_spec_build_requires@ @ax_libfwnt_spec_build_requires@ @ax_libuna_spec_build_requires@
 
 %description
-libhibr is a library to access the Windows Hibernation File (hiberfil.sys) format
+Library to access the Windows Hibernation File (hiberfil.sys) format
 
 %package devel
 Summary: Header files and libraries for developing applications for libhibr
 Group: Development/Libraries
-Requires: libhibr = %{version}-%{release} @ax_libfuse_spec_requires@
-@libhibr_spec_tools_build_requires@ @ax_libfuse_spec_build_requires@
+Requires: libhibr = %{version}-%{release}
 
 %description devel
 Header files and libraries for developing applications for libhibr.
@@ -67,8 +66,7 @@ rm -rf %{buildroot}
 %files tools
 %defattr(644,root,root,755)
 %doc AUTHORS COPYING NEWS README
-%attr(755,root,root) %{_bindir}/hibrinfo
-%attr(755,root,root) %{_bindir}/hibrmount
+%attr(755,root,root) %{_bindir}/*
 %{_mandir}/man1/*
 
 %changelog
