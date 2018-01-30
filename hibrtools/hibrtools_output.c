@@ -1,7 +1,7 @@
 /*
  * Common output functions for the hibrtools
  *
- * Copyright (C) 2012-2017, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2012-2018, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -103,7 +103,7 @@ void hibroutput_copyright_fprint(
 	 */
 	fprintf(
 	 stream,
-	 _( "Copyright (C) 2012-2017, %s.\n" ),
+	 _( "Copyright (C) 2012-2018, %s.\n" ),
 	 _( "Joachim Metz" ) );
 
 	fprintf(
