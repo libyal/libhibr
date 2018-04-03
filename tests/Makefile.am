@@ -74,6 +74,7 @@ hibr_test_error_LDADD = \
 
 hibr_test_file_SOURCES = \
 	hibr_test_file.c \
+	hibr_test_functions.c hibr_test_functions.h \
 	hibr_test_getopt.c hibr_test_getopt.h \
 	hibr_test_libcerror.h \
 	hibr_test_libclocale.h \
@@ -84,7 +85,11 @@ hibr_test_file_SOURCES = \
 	hibr_test_memory.c hibr_test_memory.h
 
 hibr_test_file_LDADD = \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
 	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
@@ -106,15 +111,18 @@ hibr_test_io_handle_LDADD = \
 	@LIBCERROR_LIBADD@
 
 hibr_test_notify_SOURCES = \
+	hibr_test_libcerror.h \
 	hibr_test_libhibr.h \
 	hibr_test_macros.h \
 	hibr_test_notify.c \
 	hibr_test_unused.h
 
 hibr_test_notify_LDADD = \
-	../libhibr/libhibr.la
+	../libhibr/libhibr.la \
+	@LIBCERROR_LIBADD@
 
 hibr_test_support_SOURCES = \
+	hibr_test_functions.c hibr_test_functions.h \
 	hibr_test_getopt.c hibr_test_getopt.h \
 	hibr_test_libbfio.h \
 	hibr_test_libcerror.h \
@@ -123,6 +131,7 @@ hibr_test_support_SOURCES = \
 	hibr_test_libhibr.h \
 	hibr_test_libuna.h \
 	hibr_test_macros.h \
+	hibr_test_memory.c hibr_test_memory.h \
 	hibr_test_support.c
 
 hibr_test_support_LDADD = \

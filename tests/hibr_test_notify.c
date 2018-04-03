@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #endif
 
+#include "hibr_test_libcerror.h"
 #include "hibr_test_libhibr.h"
 #include "hibr_test_macros.h"
 #include "hibr_test_unused.h"
@@ -51,13 +52,37 @@ int hibr_test_notify_set_verbose(
 int hibr_test_notify_set_stream(
      void )
 {
-	/* Test invocation of function only
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test regular cases
 	 */
-	libhibr_notify_set_stream(
-	 NULL,
-	 NULL );
+	result = libhibr_notify_set_stream(
+	          NULL,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+/* TODO test libcnotify_stream_set failure */
 
 	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
 }
 
 /* Tests the libhibr_notify_stream_open function
@@ -66,13 +91,65 @@ int hibr_test_notify_set_stream(
 int hibr_test_notify_stream_open(
      void )
 {
-	/* Test invocation of function only
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test regular cases
 	 */
-	libhibr_notify_stream_open(
-	 NULL,
-	 NULL );
+	result = libhibr_notify_stream_open(
+	          "notify_stream.log",
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libhibr_notify_stream_open(
+	          NULL,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libhibr_notify_stream_close(
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
 }
 
 /* Tests the libhibr_notify_stream_close function
@@ -81,12 +158,36 @@ int hibr_test_notify_stream_open(
 int hibr_test_notify_stream_close(
      void )
 {
-	/* Test invocation of function only
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test regular cases
 	 */
-	libhibr_notify_stream_close(
-	 NULL );
+	result = libhibr_notify_stream_close(
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+/* TODO test libcnotify_stream_close failure */
 
 	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
 }
 
 /* The main program
