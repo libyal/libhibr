@@ -28,17 +28,13 @@
  */
 #if !defined( HAVE_LOCAL_LIBHIBR )
 
-/* If libtool DLL support is enabled set LIBHIBR_DLL_EXPORT
- * before including libhibr/extern.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBHIBR_DLL_EXPORT
-#endif
-
 #include <libhibr/extern.h>
 
+#define LIBHIBR_EXTERN_VARIABLE	LIBHIBR_EXTERN
+
 #else
-#define LIBHIBR_EXTERN	/* extern */
+#define LIBHIBR_EXTERN		/* extern */
+#define LIBHIBR_EXTERN_VARIABLE	extern
 
 #endif /* !defined( HAVE_LOCAL_LIBHIBR ) */
 

@@ -113,6 +113,8 @@ int hibr_test_io_handle_initialize(
 	          &io_handle,
 	          &error );
 
+	io_handle = NULL;
+
 	HIBR_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -124,8 +126,6 @@ int hibr_test_io_handle_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	io_handle = NULL;
 
 #if defined( HAVE_HIBR_TEST_MEMORY )
 
@@ -270,6 +270,134 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libhibr_io_handle_clear function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_io_handle_clear(
+     void )
+{
+	libcerror_error_t *error       = NULL;
+	libhibr_io_handle_t *io_handle = NULL;
+	int result                     = 0;
+
+	/* Initialize test
+	 */
+	result = libhibr_io_handle_initialize(
+	          &io_handle,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "io_handle",
+	 io_handle );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libhibr_io_handle_clear(
+	          io_handle,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libhibr_io_handle_clear(
+	          NULL,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+#if defined( HAVE_HIBR_TEST_MEMORY )
+
+	/* Test libhibr_io_handle_clear with memset failing
+	 */
+	hibr_test_memset_attempts_before_fail = 0;
+
+	result = libhibr_io_handle_clear(
+	          io_handle,
+	          &error );
+
+	if( hibr_test_memset_attempts_before_fail != -1 )
+	{
+		hibr_test_memset_attempts_before_fail = -1;
+	}
+	else
+	{
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#endif /* defined( HAVE_HIBR_TEST_MEMORY ) */
+
+	/* Clean up
+	 */
+	result = libhibr_io_handle_free(
+	          &io_handle,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "io_handle",
+	 io_handle );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( io_handle != NULL )
+	{
+		libhibr_io_handle_free(
+		 &io_handle,
+		 NULL );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) && !defined( LIBHIBR_DLL_IMPORT ) */
 
 /* The main program
@@ -297,7 +425,9 @@ int main(
 	 "libhibr_io_handle_free",
 	 hibr_test_io_handle_free );
 
-	/* TODO: add tests for libhibr_io_handle_clear */
+	HIBR_TEST_RUN(
+	 "libhibr_io_handle_clear",
+	 hibr_test_io_handle_clear );
 
 	/* TODO: add tests for libhibr_io_handle_read_memory_image_information */
 

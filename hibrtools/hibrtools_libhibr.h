@@ -1,5 +1,5 @@
 /*
- * The internal libhibr header
+ * The libhibr header wrapper
  *
  * Copyright (C) 2012-2018, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -23,13 +23,6 @@
 #define _HIBRTOOLS_LIBHIBR_H
 
 #include <common.h>
-
-/* If Cygwin libtool DLL support is enabled set LIBHIBR_DLL_IMPORT
- * before including libhibr.h
- */
-#if defined( _WIN32 ) && defined( DLL_IMPORT ) && !defined( HAVE_STATIC_EXECUTABLES )
-#define LIBHIBR_DLL_IMPORT
-#endif
 
 #include <libhibr.h>
 
