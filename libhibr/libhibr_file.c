@@ -1,7 +1,7 @@
 /*
  * File functions
  *
- * Copyright (C) 2012-2018, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2012-2019, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -767,7 +767,7 @@ int libhibr_file_close(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free compressed page datacompressed page data  cache.",
+		 "%s: unable to free compressed page datacompressed page data cache.",
 		 function );
 
 		result = -1;
@@ -914,7 +914,7 @@ int libhibr_file_open_read(
 	     (intptr_t *) internal_file->io_handle,
 	     NULL,
 	     NULL,
-	     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfcache_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &libhibr_io_handle_read_compressed_page_data,
+	     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfdata_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &libhibr_io_handle_read_compressed_page_data,
 	     NULL,
 	     LIBFDATA_DATA_HANDLE_FLAG_NON_MANAGED,
 	     error ) != 1 )
@@ -1110,11 +1110,11 @@ ssize_t libhibr_file_read_buffer(
 	libhibr_compressed_page_data_t *compressed_page_data = NULL;
 	libhibr_internal_file_t *internal_file               = NULL;
 	static char *function                                = "libhibr_file_read_buffer";
-	off64_t block_file_offset                            = 0;
 	size64_t media_size                                  = 0;
 	size_t buffer_offset                                 = 0;
-	size_t page_data_offset                              = 0;
 	size_t read_size                                     = 0;
+	off64_t block_file_offset                            = 0;
+	off64_t page_data_offset                             = 0;
 	uint64_t block_offset                                = 0;
 	uint64_t block_sector_offset                         = 0;
 	uint8_t block_is_sparse                              = 0;
@@ -1198,7 +1198,7 @@ ssize_t libhibr_file_read_buffer(
 		if( libfdata_list_get_element_value_at_offset(
 		     internal_file->compressed_page_data_list,
 		     (intptr_t *) internal_file->file_io_handle,
-		     internal_file->compressed_page_data_cache,
+		     (libfdata_cache_t *) internal_file->compressed_page_data_cache,
 		     internal_file->current_offset,
 		     &element_index,
 		     &page_data_offset,

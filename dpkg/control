@@ -9,6 +9,8 @@ Homepage: https://github.com/libyal/libhibr
 Package: libhibr
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libhibr1
+Replaces: libhibr1
 Suggests: libhibr-dbg
 Description: Library to access the Windows Hibernation File (hiberfil.sys) format
  libhibr is a library to access the Windows Hibernation File (hiberfil.sys) format.
@@ -31,6 +33,8 @@ Package: libhibr-tools
 Section: utils
 Architecture: any
 Depends: libhibr (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libhibr-utils
+Replaces: libhibr-utils
 Description: Several tools for reading Windows Hibernation Files (hiberfil.sys)
  Several tools for reading Windows Hibernation Files (hiberfil.sys).
 

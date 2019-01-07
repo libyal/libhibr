@@ -8,26 +8,34 @@ Source: %{name}-%{version}.tar.gz
 URL: https://github.com/libyal/libhibr
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 @libhibr_spec_requires@ @ax_libbfio_spec_requires@ @ax_libcdata_spec_requires@ @ax_libcerror_spec_requires@ @ax_libcfile_spec_requires@ @ax_libclocale_spec_requires@ @ax_libcnotify_spec_requires@ @ax_libcpath_spec_requires@ @ax_libcsplit_spec_requires@ @ax_libcthreads_spec_requires@ @ax_libfcache_spec_requires@ @ax_libfdata_spec_requires@ @ax_libfdatetime_spec_requires@ @ax_libfwnt_spec_requires@ @ax_libuna_spec_requires@
-@libhibr_spec_build_requires@ @ax_libbfio_spec_build_requires@ @ax_libcdata_spec_build_requires@ @ax_libcerror_spec_build_requires@ @ax_libcfile_spec_build_requires@ @ax_libclocale_spec_build_requires@ @ax_libcnotify_spec_build_requires@ @ax_libcpath_spec_build_requires@ @ax_libcsplit_spec_build_requires@ @ax_libcthreads_spec_build_requires@ @ax_libfcache_spec_build_requires@ @ax_libfdata_spec_build_requires@ @ax_libfdatetime_spec_build_requires@ @ax_libfwnt_spec_build_requires@ @ax_libuna_spec_build_requires@
+BuildRequires: gcc @ax_libbfio_spec_build_requires@ @ax_libcdata_spec_build_requires@ @ax_libcerror_spec_build_requires@ @ax_libcfile_spec_build_requires@ @ax_libclocale_spec_build_requires@ @ax_libcnotify_spec_build_requires@ @ax_libcpath_spec_build_requires@ @ax_libcsplit_spec_build_requires@ @ax_libcthreads_spec_build_requires@ @ax_libfcache_spec_build_requires@ @ax_libfdata_spec_build_requires@ @ax_libfdatetime_spec_build_requires@ @ax_libfwnt_spec_build_requires@ @ax_libuna_spec_build_requires@
 
-%description
+%description -n libhibr
 Library to access the Windows Hibernation File (hiberfil.sys) format
 
-%package devel
+%package -n libhibr-static
+Summary: Library to access the Windows Hibernation File (hiberfil.sys) format
+Group: Development/Libraries
+Requires: libhibr = %{version}-%{release}
+
+%description -n libhibr-static
+Static library version of libhibr.
+
+%package -n libhibr-devel
 Summary: Header files and libraries for developing applications for libhibr
 Group: Development/Libraries
 Requires: libhibr = %{version}-%{release}
 
-%description devel
+%description -n libhibr-devel
 Header files and libraries for developing applications for libhibr.
 
-%package tools
+%package -n libhibr-tools
 Summary: Several tools for reading Windows Hibernation Files (hiberfil.sys)
 Group: Applications/System
 Requires: libhibr = %{version}-%{release} @ax_libfuse_spec_requires@
 @libhibr_spec_tools_build_requires@ @ax_libfuse_spec_build_requires@
 
-%description tools
+%description -n libhibr-tools
 Several tools for reading Windows Hibernation Files (hiberfil.sys)
 
 %prep
@@ -48,24 +56,29 @@ rm -rf %{buildroot}
 
 %postun -p /sbin/ldconfig
 
-%files
+%files -n libhibr
 %defattr(644,root,root,755)
 %license COPYING
 %doc AUTHORS README
 %attr(755,root,root) %{_libdir}/*.so.*
 
-%files devel
+%files -n libhibr-static
 %defattr(644,root,root,755)
 %license COPYING
-%doc AUTHORS README ChangeLog
-%{_libdir}/*.a
+%doc AUTHORS README
+%attr(755,root,root) %{_libdir}/*.a
+
+%files -n libhibr-devel
+%defattr(644,root,root,755)
+%license COPYING
+%doc AUTHORS README
 %{_libdir}/*.la
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/libhibr.pc
 %{_includedir}/*
 %{_mandir}/man3/*
 
-%files tools
+%files -n libhibr-tools
 %defattr(644,root,root,755)
 %license COPYING
 %doc AUTHORS README

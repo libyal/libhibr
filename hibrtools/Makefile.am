@@ -48,19 +48,27 @@ hibrmount_SOURCES = \
 	hibrmount.c \
 	hibrtools_getopt.c hibrtools_getopt.h \
 	hibrtools_i18n.h \
+	hibrtools_libcdata.h \
 	hibrtools_libcerror.h \
 	hibrtools_libclocale.h \
 	hibrtools_libcnotify.h \
+	hibrtools_libcpath.h \
 	hibrtools_libhibr.h \
 	hibrtools_output.c hibrtools_output.h \
 	hibrtools_signal.c hibrtools_signal.h \
 	hibrtools_unused.h \
+	mount_dokan.c mount_dokan.h \
+	mount_file_entry.c mount_file_entry.h \
+	mount_file_system.c mount_file_system.h \
+	mount_fuse.c mount_fuse.h \
 	mount_handle.c mount_handle.h
 
 hibrmount_LDADD = \
 	@LIBFUSE_LIBADD@ \
+	@LIBUNA_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
 	../libhibr/libhibr.la \
 	@LIBCERROR_LIBADD@ \
 	@LIBINTL@

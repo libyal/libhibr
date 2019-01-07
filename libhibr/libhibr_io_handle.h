@@ -1,7 +1,7 @@
 /*
  * Input/Output (IO) handle functions
  *
- * Copyright (C) 2012-2018, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2012-2019, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -27,7 +27,6 @@
 
 #include "libhibr_libbfio.h"
 #include "libhibr_libcerror.h"
-#include "libhibr_libfcache.h"
 #include "libhibr_libfdata.h"
 
 #if defined( __cplusplus )
@@ -74,7 +73,7 @@ int libhibr_io_handle_read_compressed_page_data(
      intptr_t *io_handle,
      libbfio_handle_t *file_io_handle,
      libfdata_list_element_t *list_element,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int element_data_file_index,
      off64_t element_data_offset,
      size64_t element_data_size,

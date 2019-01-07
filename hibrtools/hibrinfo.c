@@ -1,7 +1,7 @@
 /*
  * Shows information obtained from a Windows Hibernation File (hiberfil.sys)
  *
- * Copyright (C) 2012-2018, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2012-2019, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -156,7 +156,7 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	hibroutput_version_fprint(
+	hibrtools_output_version_fprint(
 	 stdout,
 	 program );
 
@@ -191,7 +191,7 @@ int main( int argc, char * const argv[] )
 				break;
 
 			case (system_integer_t) 'V':
-				hibroutput_copyright_fprint(
+				hibrtools_output_copyright_fprint(
 				 stdout );
 
 				return( EXIT_SUCCESS );

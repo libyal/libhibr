@@ -1,7 +1,7 @@
 /*
  * Mounts a Windows Hibernation File (hiberfil.sys)
  *
- * Copyright (C) 2012-2018, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2012-2019, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -22,15 +22,10 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
-#include <narrow_string.h>
 #include <system_string.h>
 #include <types.h>
 
 #include <stdio.h>
-
-#if defined( HAVE_ERRNO_H ) || defined( WINAPI )
-#include <errno.h>
-#endif
 
 #if defined( HAVE_IO_H ) || defined( WINAPI )
 #include <io.h>
@@ -44,30 +39,8 @@
 #include <unistd.h>
 #endif
 
-#if !defined( WINAPI ) || defined( USE_CRT_FUNCTIONS )
-#if defined( TIME_WITH_SYS_TIME )
-#include <sys/time.h>
-#include <time.h>
-#elif defined( HAVE_SYS_TIME_H )
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif
-#endif
-
-#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
-#define FUSE_USE_VERSION	26
-
-#if defined( HAVE_LIBFUSE )
-#include <fuse.h>
-
-#elif defined( HAVE_LIBOSXFUSE )
-#include <osxfuse/fuse.h>
-#endif
-
-#endif /* defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE ) */
-
 #include "hibrtools_getopt.h"
+#include "hibrtools_i18n.h"
 #include "hibrtools_libcerror.h"
 #include "hibrtools_libclocale.h"
 #include "hibrtools_libcnotify.h"
@@ -75,12 +48,14 @@
 #include "hibrtools_output.h"
 #include "hibrtools_signal.h"
 #include "hibrtools_unused.h"
+#include "mount_dokan.h"
+#include "mount_fuse.h"
 #include "mount_handle.h"
 
 mount_handle_t *hibrmount_mount_handle = NULL;
 int hibrmount_abort                    = 0;
 
-/* Prints the executable usage information
+/* Prints usage information
  */
 void usage_fprint(
       FILE *stream )
@@ -89,17 +64,16 @@ void usage_fprint(
 	{
 		return;
 	}
-	fprintf( stream, "Use hibrmount to mount the Windows Hibernation File\n\n" );
+	fprintf( stream, "Use hibrmount to mount a Windows Hibernation File (hiberfil.sys)\n\n" );
 
-	fprintf( stream, "Usage: hibrmount [ -X extended_options ] [ -hvV ]\n"
-	                 "                 hibr_file mount_point\n\n" );
+	fprintf( stream, "Usage: hibrmount [ -X extended_options ] [ -hvV ] file mount_point\n\n" );
 
-	fprintf( stream, "\thibr_file:   the Windows Hibernation file\n\n" );
+	fprintf( stream, "\tfile:        a Windows Hibernation File (hiberfil.sys)\n\n" );
 	fprintf( stream, "\tmount_point: the directory to serve as mount point\n\n" );
 
 	fprintf( stream, "\t-h:          shows this help\n" );
-	fprintf( stream, "\t-v:          verbose output to stderr\n"
-	                 "\t             hibrmount will remain running in the foreground\n" );
+	fprintf( stream, "\t-v:          verbose output to stderr, while hibrmount will remain running in the\n"
+	                 "\t             foreground\n" );
 	fprintf( stream, "\t-V:          print version\n" );
 	fprintf( stream, "\t-X:          extended options to pass to sub system\n" );
 }
@@ -148,533 +122,6 @@ void hibrmount_signal_handler(
 	}
 }
 
-#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
-
-#if ( SIZEOF_OFF_T != 8 ) && ( SIZEOF_OFF_T != 4 )
-#error Size of off_t not supported
-#endif
-
-static char *hibrmount_fuse_path         = "/hibr1";
-static size_t hibrmount_fuse_path_length = 6;
-
-/* Opens a file
- * Returns 0 if successful or a negative errno value otherwise
- */
-int hibrmount_fuse_open(
-     const char *path,
-     struct fuse_file_info *file_info )
-{
-	libcerror_error_t *error = NULL;
-	static char *function   = "hibrmount_fuse_open";
-	size_t path_length      = 0;
-	int result              = 0;
-
-	if( path == NULL )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid path.",
-		 function );
-
-		result = -EINVAL;
-
-		goto on_error;
-	}
-	if( file_info == NULL )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid file info.",
-		 function );
-
-		result = -EINVAL;
-
-		goto on_error;
-	}
-	path_length = narrow_string_length(
-	               path );
-
-	if( ( path_length != hibrmount_fuse_path_length )
-	 || ( narrow_string_compare(
-	       path,
-	       hibrmount_fuse_path,
-	       hibrmount_fuse_path_length ) != 0 ) )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported path.",
-		 function );
-
-		result = -ENOENT;
-
-		goto on_error;
-	}
-	if( ( file_info->flags & 0x03 ) != O_RDONLY )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-		 "%s: write access currently not supported.",
-		 function );
-
-		result = -EACCES;
-
-		goto on_error;
-	}
-	return( 0 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcnotify_print_error_backtrace(
-		 error );
-		libcerror_error_free(
-		 &error );
-	}
-	return( result );
-}
-
-/* Reads a buffer of data at the specified offset
- * Returns number of bytes read if successful or a negative errno value otherwise
- */
-int hibrmount_fuse_read(
-     const char *path,
-     char *buffer,
-     size_t size,
-     off_t offset,
-     struct fuse_file_info *file_info )
-{
-	libcerror_error_t *error = NULL;
-	static char *function    = "hibrmount_fuse_read";
-	size_t path_length       = 0;
-	ssize_t read_count       = 0;
-	int result               = 0;
-
-	if( path == NULL )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid path.",
-		 function );
-
-		result = -EINVAL;
-
-		goto on_error;
-	}
-	if( size > (size_t) INT_MAX )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid size value exceeds maximum.",
-		 function );
-
-		result = -EINVAL;
-
-		goto on_error;
-	}
-	if( file_info == NULL )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid file info.",
-		 function );
-
-		result = -EINVAL;
-
-		goto on_error;
-	}
-	path_length = narrow_string_length(
-	               path );
-
-	if( ( path_length != hibrmount_fuse_path_length )
-	 || ( narrow_string_compare(
-	       path,
-	       hibrmount_fuse_path,
-	       hibrmount_fuse_path_length ) != 0 ) )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported path.",
-		 function );
-
-		result = -ENOENT;
-
-		goto on_error;
-	}
-	if( mount_handle_seek_offset(
-	     hibrmount_mount_handle,
-	     (off64_t) offset,
-	     SEEK_SET,
-	     &error ) == -1 )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek offset in mount handle.",
-		 function );
-
-		result = -EIO;
-
-		goto on_error;
-	}
-	read_count = mount_handle_read_buffer(
-	              hibrmount_mount_handle,
-	              (uint8_t *) buffer,
-	              size,
-	              &error );
-
-	if( read_count == -1 )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read from mount handle.",
-		 function );
-
-		result = -EIO;
-
-		goto on_error;
-	}
-	return( (int) read_count );
-
-on_error:
-	if( error != NULL )
-	{
-		libcnotify_print_error_backtrace(
-		 error );
-		libcerror_error_free(
-		 &error );
-	}
-	return( result );
-}
-
-/* Reads a directory
- * Returns 0 if successful or a negative errno value otherwise
- */
-int hibrmount_fuse_readdir(
-     const char *path,
-     void *buffer,
-     fuse_fill_dir_t filler,
-     off_t offset HIBRTOOLS_ATTRIBUTE_UNUSED,
-     struct fuse_file_info *file_info HIBRTOOLS_ATTRIBUTE_UNUSED )
-{
-	libcerror_error_t *error = NULL;
-	static char *function    = "hibrmount_fuse_readdir";
-	size_t path_length       = 0;
-	int result               = 0;
-
-	HIBRTOOLS_UNREFERENCED_PARAMETER( offset )
-	HIBRTOOLS_UNREFERENCED_PARAMETER( file_info )
-
-	if( path == NULL )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid path.",
-		 function );
-
-		result = -EINVAL;
-
-		goto on_error;
-	}
-	path_length = narrow_string_length(
-	               path );
-
-	if( ( path_length != 1 )
-	 || ( path[ 0 ] != '/' ) )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported path.",
-		 function );
-
-		result = -ENOENT;
-
-		goto on_error;
-	}
-	if( filler(
-	     buffer,
-	     ".",
-	     NULL,
-	     0 ) == 1 )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set directory entry.",
-		 function );
-
-		result = -EIO;
-
-		goto on_error;
-	}
-	if( filler(
-	     buffer,
-	     "..",
-	     NULL,
-	     0 ) == 1 )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set directory entry.",
-		 function );
-
-		result = -EIO;
-
-		goto on_error;
-	}
-	if( filler(
-	     buffer,
-	     &( hibrmount_fuse_path[ 1 ] ),
-	     NULL,
-	     0 ) == 1 )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set directory entry.",
-		 function );
-
-		result = -EIO;
-
-		goto on_error;
-	}
-	return( 0 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcnotify_print_error_backtrace(
-		 error );
-		libcerror_error_free(
-		 &error );
-	}
-	return( result );
-}
-
-/* Retrieves the file stat info
- * Returns 0 if successful or a negative errno value otherwise
- */
-int hibrmount_fuse_getattr(
-     const char *path,
-     struct stat *stat_info )
-{
-	libcerror_error_t *error = NULL;
-	static char *function    = "hibrmount_fuse_getattr";
-	size64_t media_size      = 0;
-	size_t path_length       = 0;
-	int result               = -ENOENT;
-
-#if defined( HAVE_TIME )
-	time_t timestamp         = 0;
-#endif
-
-	if( path == NULL )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid path.",
-		 function );
-
-		result = -EINVAL;
-
-		goto on_error;
-	}
-	if( stat_info == NULL )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid stat info.",
-		 function );
-
-		result = -EINVAL;
-
-		goto on_error;
-	}
-	if( memory_set(
-	     stat_info,
-	     0,
-	     sizeof( struct stat ) ) == NULL )
-	{
-		libcerror_error_set(
-		 &error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
-		 "%s: unable to clear stat info.",
-		 function );
-
-		result = errno;
-
-		goto on_error;
-	}
-	path_length = narrow_string_length(
-	               path );
-
-	if( path_length == 1 )
-	{
-		if( path[ 0 ] == '/' )
-		{
-			stat_info->st_mode  = S_IFDIR | 0755;
-			stat_info->st_nlink = 2;
-
-			result = 0;
-		}
-	}
-	else if( path_length == hibrmount_fuse_path_length )
-	{
-		if( narrow_string_compare(
-		     path,
-		     hibrmount_fuse_path,
-		     hibrmount_fuse_path_length ) == 0 )
-		{
-			stat_info->st_mode  = S_IFREG | 0444;
-			stat_info->st_nlink = 1;
-
-			if( mount_handle_get_media_size(
-			     hibrmount_mount_handle,
-			     &media_size,
-			     &error ) != 1 )
-			{
-				libcerror_error_set(
-				 &error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve media size.",
-				 function );
-
-				result = -EIO;
-
-				goto on_error;
-			}
-#if SIZEOF_OFF_T == 4
-			if( media_size > (size64_t) UINT32_MAX )
-			{
-				libcerror_error_set(
-				 &error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-				 "%s: invalid media size value out of bounds.",
-				 function );
-
-				result = -ERANGE;
-
-				goto on_error;
-			}
-#endif
-			stat_info->st_size = (off_t) media_size;
-
-			result = 0;
-		}
-	}
-	if( result == 0 )
-	{
-#if defined( HAVE_TIME )
-		if( time( &timestamp ) == (time_t) -1 )
-		{
-			timestamp = 0;
-		}
-		stat_info->st_atime = timestamp;
-		stat_info->st_mtime = timestamp;
-		stat_info->st_ctime = timestamp;
-#else
-		stat_info->st_atime = 0;
-		stat_info->st_mtime = 0;
-		stat_info->st_ctime = 0;
-#endif
-#if defined( HAVE_GETEUID )
-		stat_info->st_uid = geteuid();
-#else
-		stat_info->st_uid = 0;
-#endif
-#if defined( HAVE_GETEGID )
-		stat_info->st_gid = getegid();
-#else
-		stat_info->st_gid = 0;
-#endif
-	}
-	return( result );
-
-on_error:
-	if( error != NULL )
-	{
-		libcnotify_print_error_backtrace(
-		 error );
-		libcerror_error_free(
-		 &error );
-	}
-	return( result );
-}
-
-/* Cleans up when fuse is done
- */
-void hibrmount_fuse_destroy(
-      void *private_data HIBRTOOLS_ATTRIBUTE_UNUSED )
-{
-	libcerror_error_t *error = NULL;
-	static char *function    = "hibrmount_fuse_destroy";
-
-	HIBRTOOLS_UNREFERENCED_PARAMETER( private_data )
-
-	if( hibrmount_mount_handle != NULL )
-	{
-		if( mount_handle_free(
-		     &hibrmount_mount_handle,
-		     &error ) != 1 )
-		{
-			libcerror_error_set(
-			 &error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free mount handle.",
-			 function );
-
-			goto on_error;
-		}
-	}
-	return;
-
-on_error:
-	if( error != NULL )
-	{
-		libcnotify_print_error_backtrace(
-		 error );
-		libcerror_error_free(
-		 &error );
-	}
-	return;
-}
-
-#endif /* defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE ) */
-
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -686,9 +133,11 @@ int main( int argc, char * const argv[] )
 	libhibr_error_t *error                      = NULL;
 	system_character_t *mount_point             = NULL;
 	system_character_t *option_extended_options = NULL;
+	const system_character_t *path_prefix       = NULL;
 	system_character_t *source                  = NULL;
 	char *program                               = "hibrmount";
 	system_integer_t option                     = 0;
+	size_t path_prefix_size                     = 0;
 	int result                                  = 0;
 	int verbose                                 = 0;
 
@@ -698,6 +147,10 @@ int main( int argc, char * const argv[] )
 	struct fuse_args hibrmount_fuse_arguments   = FUSE_ARGS_INIT(0, NULL);
 	struct fuse_chan *hibrmount_fuse_channel    = NULL;
 	struct fuse *hibrmount_fuse_handle          = NULL;
+
+#elif defined( HAVE_LIBDOKAN )
+	DOKAN_OPERATIONS hibrmount_dokan_operations;
+	DOKAN_OPTIONS hibrmount_dokan_options;
 #endif
 
 	libcnotify_stream_set(
@@ -707,7 +160,7 @@ int main( int argc, char * const argv[] )
 	 1 );
 
 	if( libclocale_initialize(
-             "hibrtools",
+	     "hibrtools",
 	     &error ) != 1 )
 	{
 		fprintf(
@@ -717,8 +170,8 @@ int main( int argc, char * const argv[] )
 		goto on_error;
 	}
 	if( hibrtools_output_initialize(
-             _IONBF,
-             &error ) != 1 )
+	     _IONBF,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
@@ -726,7 +179,7 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	hibroutput_version_fprint(
+	hibrtools_output_version_fprint(
 	 stdout,
 	 program );
 
@@ -761,7 +214,7 @@ int main( int argc, char * const argv[] )
 				break;
 
 			case (system_integer_t) 'V':
-				hibroutput_copyright_fprint(
+				hibrtools_output_copyright_fprint(
 				 stdout );
 
 				return( EXIT_SUCCESS );
@@ -816,29 +269,38 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( mount_handle_open_input(
+#if defined( WINAPI )
+	path_prefix = _SYSTEM_STRING( "\\HIBR" );
+#else
+	path_prefix = _SYSTEM_STRING( "/hibr" );
+#endif
+	path_prefix_size = 1 + system_string_length(
+	                        path_prefix );
+
+	if( mount_handle_set_path_prefix(
+	     hibrmount_mount_handle,
+	     path_prefix,
+	     path_prefix_size,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to set path prefix.\n" );
+
+		goto on_error;
+	}
+	if( mount_handle_open(
 	     hibrmount_mount_handle,
 	     source,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to open source file.\n" );
+		 "Unable to open source file\n" );
 
 		goto on_error;
 	}
 #if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
-	if( memory_set(
-	     &hibrmount_fuse_operations,
-	     0,
-	     sizeof( struct fuse_operations ) ) == NULL )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to clear fuse operations.\n" );
-
-		goto on_error;
-	}
 	if( option_extended_options != NULL )
 	{
 		/* This argument is required but ignored
@@ -874,11 +336,25 @@ int main( int argc, char * const argv[] )
 			goto on_error;
 		}
 	}
-	hibrmount_fuse_operations.open    = &hibrmount_fuse_open;
-	hibrmount_fuse_operations.read    = &hibrmount_fuse_read;
-	hibrmount_fuse_operations.readdir = &hibrmount_fuse_readdir;
-	hibrmount_fuse_operations.getattr = &hibrmount_fuse_getattr;
-	hibrmount_fuse_operations.destroy = &hibrmount_fuse_destroy;
+	if( memory_set(
+	     &hibrmount_fuse_operations,
+	     0,
+	     sizeof( struct fuse_operations ) ) == NULL )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to clear fuse operations.\n" );
+
+		goto on_error;
+	}
+	hibrmount_fuse_operations.open       = &mount_fuse_open;
+	hibrmount_fuse_operations.read       = &mount_fuse_read;
+	hibrmount_fuse_operations.release    = &mount_fuse_release;
+	hibrmount_fuse_operations.opendir    = &mount_fuse_opendir;
+	hibrmount_fuse_operations.readdir    = &mount_fuse_readdir;
+	hibrmount_fuse_operations.releasedir = &mount_fuse_releasedir;
+	hibrmount_fuse_operations.getattr    = &mount_fuse_getattr;
+	hibrmount_fuse_operations.destroy    = &mount_fuse_destroy;
 
 	hibrmount_fuse_channel = fuse_mount(
 	                          mount_point,
@@ -898,7 +374,7 @@ int main( int argc, char * const argv[] )
 	                         &hibrmount_fuse_operations,
 	                         sizeof( struct fuse_operations ),
 	                         hibrmount_mount_handle );
-	
+
 	if( hibrmount_fuse_handle == NULL )
 	{
 		fprintf(
@@ -937,13 +413,165 @@ int main( int argc, char * const argv[] )
 	 &hibrmount_fuse_arguments );
 
 	return( EXIT_SUCCESS );
+
+#elif defined( HAVE_LIBDOKAN )
+	if( memory_set(
+	     &hibrmount_dokan_operations,
+	     0,
+	     sizeof( DOKAN_OPERATIONS ) ) == NULL )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to clear dokan operations.\n" );
+
+		goto on_error;
+	}
+	if( memory_set(
+	     &hibrmount_dokan_options,
+	     0,
+	     sizeof( DOKAN_OPTIONS ) ) == NULL )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to clear dokan options.\n" );
+
+		goto on_error;
+	}
+	hibrmount_dokan_options.Version     = DOKAN_VERSION;
+	hibrmount_dokan_options.ThreadCount = 0;
+	hibrmount_dokan_options.MountPoint  = mount_point;
+
+	if( verbose != 0 )
+	{
+		hibrmount_dokan_options.Options |= DOKAN_OPTION_STDERR;
+#if defined( HAVE_DEBUG_OUTPUT )
+		hibrmount_dokan_options.Options |= DOKAN_OPTION_DEBUG;
+#endif
+	}
+/* This will only affect the drive properties
+	hibrmount_dokan_options.Options |= DOKAN_OPTION_REMOVABLE;
+*/
+
+#if ( DOKAN_VERSION >= 600 ) && ( DOKAN_VERSION < 800 )
+	hibrmount_dokan_options.Options |= DOKAN_OPTION_KEEP_ALIVE;
+
+	hibrmount_dokan_operations.CreateFile           = &mount_dokan_CreateFile;
+	hibrmount_dokan_operations.OpenDirectory        = &mount_dokan_OpenDirectory;
+	hibrmount_dokan_operations.CreateDirectory      = NULL;
+	hibrmount_dokan_operations.Cleanup              = NULL;
+	hibrmount_dokan_operations.CloseFile            = &mount_dokan_CloseFile;
+	hibrmount_dokan_operations.ReadFile             = &mount_dokan_ReadFile;
+	hibrmount_dokan_operations.WriteFile            = NULL;
+	hibrmount_dokan_operations.FlushFileBuffers     = NULL;
+	hibrmount_dokan_operations.GetFileInformation   = &mount_dokan_GetFileInformation;
+	hibrmount_dokan_operations.FindFiles            = &mount_dokan_FindFiles;
+	hibrmount_dokan_operations.FindFilesWithPattern = NULL;
+	hibrmount_dokan_operations.SetFileAttributes    = NULL;
+	hibrmount_dokan_operations.SetFileTime          = NULL;
+	hibrmount_dokan_operations.DeleteFile           = NULL;
+	hibrmount_dokan_operations.DeleteDirectory      = NULL;
+	hibrmount_dokan_operations.MoveFile             = NULL;
+	hibrmount_dokan_operations.SetEndOfFile         = NULL;
+	hibrmount_dokan_operations.SetAllocationSize    = NULL;
+	hibrmount_dokan_operations.LockFile             = NULL;
+	hibrmount_dokan_operations.UnlockFile           = NULL;
+	hibrmount_dokan_operations.GetFileSecurity      = NULL;
+	hibrmount_dokan_operations.SetFileSecurity      = NULL;
+	hibrmount_dokan_operations.GetDiskFreeSpace     = NULL;
+	hibrmount_dokan_operations.GetVolumeInformation = &mount_dokan_GetVolumeInformation;
+	hibrmount_dokan_operations.Unmount              = &mount_dokan_Unmount;
+
+#else
+	hibrmount_dokan_operations.ZwCreateFile         = &mount_dokan_ZwCreateFile;
+	hibrmount_dokan_operations.Cleanup              = NULL;
+	hibrmount_dokan_operations.CloseFile            = &mount_dokan_CloseFile;
+	hibrmount_dokan_operations.ReadFile             = &mount_dokan_ReadFile;
+	hibrmount_dokan_operations.WriteFile            = NULL;
+	hibrmount_dokan_operations.FlushFileBuffers     = NULL;
+	hibrmount_dokan_operations.GetFileInformation   = &mount_dokan_GetFileInformation;
+	hibrmount_dokan_operations.FindFiles            = &mount_dokan_FindFiles;
+	hibrmount_dokan_operations.FindFilesWithPattern = NULL;
+	hibrmount_dokan_operations.SetFileAttributes    = NULL;
+	hibrmount_dokan_operations.SetFileTime          = NULL;
+	hibrmount_dokan_operations.DeleteFile           = NULL;
+	hibrmount_dokan_operations.DeleteDirectory      = NULL;
+	hibrmount_dokan_operations.MoveFile             = NULL;
+	hibrmount_dokan_operations.SetEndOfFile         = NULL;
+	hibrmount_dokan_operations.SetAllocationSize    = NULL;
+	hibrmount_dokan_operations.LockFile             = NULL;
+	hibrmount_dokan_operations.UnlockFile           = NULL;
+	hibrmount_dokan_operations.GetFileSecurity      = NULL;
+	hibrmount_dokan_operations.SetFileSecurity      = NULL;
+	hibrmount_dokan_operations.GetDiskFreeSpace     = NULL;
+	hibrmount_dokan_operations.GetVolumeInformation = &mount_dokan_GetVolumeInformation;
+	hibrmount_dokan_operations.Unmounted            = NULL;
+	hibrmount_dokan_operations.FindStreams          = NULL;
+	hibrmount_dokan_operations.Mounted              = NULL;
+
+#endif /* ( DOKAN_VERSION >= 600 ) && ( DOKAN_VERSION < 800 ) */
+
+	result = DokanMain(
+	          &hibrmount_dokan_options,
+	          &hibrmount_dokan_operations );
+
+	switch( result )
+	{
+		case DOKAN_SUCCESS:
+			break;
+
+		case DOKAN_ERROR:
+			fprintf(
+			 stderr,
+			 "Unable to run dokan main: generic error\n" );
+			break;
+
+		case DOKAN_DRIVE_LETTER_ERROR:
+			fprintf(
+			 stderr,
+			 "Unable to run dokan main: bad drive letter\n" );
+			break;
+
+		case DOKAN_DRIVER_INSTALL_ERROR:
+			fprintf(
+			 stderr,
+			 "Unable to run dokan main: unable to load driver\n" );
+			break;
+
+		case DOKAN_START_ERROR:
+			fprintf(
+			 stderr,
+			 "Unable to run dokan main: driver error\n" );
+			break;
+
+		case DOKAN_MOUNT_ERROR:
+			fprintf(
+			 stderr,
+			 "Unable to run dokan main: unable to assign drive letter\n" );
+			break;
+
+		case DOKAN_MOUNT_POINT_ERROR:
+			fprintf(
+			 stderr,
+			 "Unable to run dokan main: mount point error\n" );
+			break;
+
+		default:
+			fprintf(
+			 stderr,
+			 "Unable to run dokan main: unknown error: %d\n",
+			 result );
+			break;
+	}
+	return( EXIT_SUCCESS );
+
 #else
 	fprintf(
 	 stderr,
 	 "No sub system to mount HIBR format.\n" );
 
 	return( EXIT_FAILURE );
-#endif
+
+#endif /* defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE ) */
 
 on_error:
 	if( error != NULL )

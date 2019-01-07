@@ -1,5 +1,4 @@
 MSVSCPP_FILES = \
-	dokan/dokan.vcproj \
 	hibr_test_compressed_page_data/hibr_test_compressed_page_data.vcproj \
 	hibr_test_compressed_page_map/hibr_test_compressed_page_map.vcproj \
 	hibr_test_error/hibr_test_error.vcproj \
