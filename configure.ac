@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libhibr],
- [20190107],
+ [20190128],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
