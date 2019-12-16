@@ -100,10 +100,6 @@ environment:
     CFLAGS: "--coverage"
     LDFLAGS: "--coverage"
 
-matrix:
-  allow_failures:
-  - TARGET: python27-x64
-
 install:
 - cmd: git clone https://github.com/codecov/codecov-bash.git ..\codecov-bash
 - cmd: if [%BUILD_ENVIRONMENT%]==[msbuild] (
@@ -154,7 +150,7 @@ install:
     }
 
 build_script:
-- ps: If ($env:BUILD_ENVIRONMENT -eq "msbuild" -or $env:BUILD_ENVIRONMENT -eq "python") {
+- ps: If ($env:BUILD_ENVIRONMENT -eq "msbuild" -or ($env:BUILD_ENVIRONMENT -eq "python" -and $isWindows)) {
     .\synclibs.ps1;
     .\autogen.ps1 }
 - cmd: if [%TARGET%]==[vs2008] (
