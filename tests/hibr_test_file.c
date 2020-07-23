@@ -30,13 +30,24 @@
 #include <stdlib.h>
 #endif
 
+#if defined( TIME_WITH_SYS_TIME )
+#include <sys/time.h>
+#include <time.h>
+#elif defined( HAVE_SYS_TIME_H )
+#include <sys/time.h>
+#else
+#include <time.h>
+#endif
+
+#include "hibr_test_functions.h"
 #include "hibr_test_getopt.h"
+#include "hibr_test_libbfio.h"
 #include "hibr_test_libcerror.h"
-#include "hibr_test_libclocale.h"
 #include "hibr_test_libhibr.h"
-#include "hibr_test_libuna.h"
 #include "hibr_test_macros.h"
 #include "hibr_test_memory.h"
+
+#include "../libhibr/libhibr_file.h"
 
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER ) && SIZEOF_WCHAR_T != 2 && SIZEOF_WCHAR_T != 4
 #error Unsupported size of wchar_t
@@ -46,412 +57,30 @@
 #define HIBR_TEST_FILE_VERBOSE
  */
 
-/* Retrieves source as a narrow string
- * Returns 1 if successful or -1 on error
- */
-int hibr_test_file_get_narrow_source(
-     const system_character_t *source,
-     char *narrow_string,
-     size_t narrow_string_size,
-     libcerror_error_t **error )
-{
-	static char *function     = "hibr_test_file_get_narrow_source";
-	size_t narrow_source_size = 0;
-	size_t source_length      = 0;
+#define HIBR_TEST_FILE_READ_BUFFER_SIZE	4096
 
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	int result                = 0;
-#endif
+#if !defined( LIBHIBR_HAVE_BFIO )
 
-	if( source == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid source.",
-		 function );
+LIBHIBR_EXTERN \
+int libhibr_check_file_signature_file_io_handle(
+     libbfio_handle_t *file_io_handle,
+     libcerror_error_t **error );
 
-		return( -1 );
-	}
-	if( narrow_string == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid narrow string.",
-		 function );
+LIBHIBR_EXTERN \
+int libhibr_file_open_file_io_handle(
+     libhibr_file_t *file,
+     libbfio_handle_t *file_io_handle,
+     int access_flags,
+     libhibr_error_t **error );
 
-		return( -1 );
-	}
-	if( narrow_string_size > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid narrow string size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-	source_length = system_string_length(
-	                 source );
-
-	if( source_length > (size_t) ( SSIZE_MAX - 1 ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid source length value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf8_string_size_from_utf32(
-		          (libuna_utf32_character_t *) source,
-		          source_length + 1,
-		          &narrow_source_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf8_string_size_from_utf16(
-		          (libuna_utf16_character_t *) source,
-		          source_length + 1,
-		          &narrow_source_size,
-		          error );
-#endif
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_byte_stream_size_from_utf32(
-		          (libuna_utf32_character_t *) source,
-		          source_length + 1,
-		          libclocale_codepage,
-		          &narrow_source_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_byte_stream_size_from_utf16(
-		          (libuna_utf16_character_t *) source,
-		          source_length + 1,
-		          libclocale_codepage,
-		          &narrow_source_size,
-		          error );
-#endif
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to determine narrow string size.",
-		 function );
-
-		return( -1 );
-	}
-#else
-	narrow_source_size = source_length + 1;
-
-#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
-
-	if( narrow_string_size < narrow_source_size )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
-		 "%s: narrow string too small.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf8_string_copy_from_utf32(
-		          (libuna_utf8_character_t *) narrow_string,
-		          narrow_string_size,
-		          (libuna_utf32_character_t *) source,
-		          source_length + 1,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf8_string_copy_from_utf16(
-		          (libuna_utf8_character_t *) narrow_string,
-		          narrow_string_size,
-		          (libuna_utf16_character_t *) source,
-		          source_length + 1,
-		          error );
-#endif
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_byte_stream_copy_from_utf32(
-		          (uint8_t *) narrow_string,
-		          narrow_string_size,
-		          libclocale_codepage,
-		          (libuna_utf32_character_t *) source,
-		          source_length + 1,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_byte_stream_copy_from_utf16(
-		          (uint8_t *) narrow_string,
-		          narrow_string_size,
-		          libclocale_codepage,
-		          (libuna_utf16_character_t *) source,
-		          source_length + 1,
-		          error );
-#endif
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to set narrow string.",
-		 function );
-
-		return( -1 );
-	}
-#else
-	if( system_string_copy(
-	     narrow_string,
-	     source,
-	     source_length ) == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to set narrow string.",
-		 function );
-
-		return( -1 );
-	}
-	narrow_string[ source_length ] = 0;
-
-#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
-
-	return( 1 );
-}
-
-#if defined( HAVE_WIDE_CHARACTER_TYPE )
-
-/* Retrieves source as a wide string
- * Returns 1 if successful or -1 on error
- */
-int hibr_test_file_get_wide_source(
-     const system_character_t *source,
-     wchar_t *wide_string,
-     size_t wide_string_size,
-     libcerror_error_t **error )
-{
-	static char *function   = "hibr_test_file_get_wide_source";
-	size_t source_length    = 0;
-	size_t wide_source_size = 0;
-
-#if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	int result              = 0;
-#endif
-
-	if( source == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid source.",
-		 function );
-
-		return( -1 );
-	}
-	if( wide_string == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid wide string.",
-		 function );
-
-		return( -1 );
-	}
-	if( wide_string_size > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid wide string size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-	source_length = system_string_length(
-	                 source );
-
-	if( source_length > (size_t) ( SSIZE_MAX - 1 ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid source length value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	wide_source_size = source_length + 1;
-#else
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_size_from_utf8(
-		          (libuna_utf8_character_t *) source,
-		          source_length + 1,
-		          &wide_source_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_size_from_utf8(
-		          (libuna_utf8_character_t *) source,
-		          source_length + 1,
-		          &wide_source_size,
-		          error );
-#endif
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_size_from_byte_stream(
-		          (uint8_t *) source,
-		          source_length + 1,
-		          libclocale_codepage,
-		          &wide_source_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_size_from_byte_stream(
-		          (uint8_t *) source,
-		          source_length + 1,
-		          libclocale_codepage,
-		          &wide_source_size,
-		          error );
-#endif
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to determine wide string size.",
-		 function );
-
-		return( -1 );
-	}
-
-#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
-
-	if( wide_string_size < wide_source_size )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
-		 "%s: wide string too small.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	if( system_string_copy(
-	     wide_string,
-	     source,
-	     source_length ) == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to set wide string.",
-		 function );
-
-		return( -1 );
-	}
-	wide_string[ source_length ] = 0;
-#else
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_copy_from_utf8(
-		          (libuna_utf32_character_t *) wide_string,
-		          wide_string_size,
-		          (libuna_utf8_character_t *) source,
-		          source_length + 1,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_copy_from_utf8(
-		          (libuna_utf16_character_t *) wide_string,
-		          wide_string_size,
-		          (libuna_utf8_character_t *) source,
-		          source_length + 1,
-		          error );
-#endif
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_copy_from_byte_stream(
-		          (libuna_utf32_character_t *) wide_string,
-		          wide_string_size,
-		          (uint8_t *) source,
-		          source_length + 1,
-		          libclocale_codepage,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_copy_from_byte_stream(
-		          (libuna_utf16_character_t *) wide_string,
-		          wide_string_size,
-		          (uint8_t *) source,
-		          source_length + 1,
-		          libclocale_codepage,
-		          error );
-#endif
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to set wide string.",
-		 function );
-
-		return( -1 );
-	}
-
-#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
-
-	return( 1 );
-}
-
-#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+#endif /* !defined( LIBHIBR_HAVE_BFIO ) */
 
 /* Creates and opens a source file
  * Returns 1 if successful or -1 on error
  */
 int hibr_test_file_open_source(
      libhibr_file_t **file,
-     const system_character_t *source,
+     libbfio_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
 	static char *function = "hibr_test_file_open_source";
@@ -468,13 +97,13 @@ int hibr_test_file_open_source(
 
 		return( -1 );
 	}
-	if( source == NULL )
+	if( file_io_handle == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid source.",
+		 "%s: invalid file IO handle.",
 		 function );
 
 		return( -1 );
@@ -492,19 +121,12 @@ int hibr_test_file_open_source(
 
 		goto on_error;
 	}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	result = libhibr_file_open_wide(
+	result = libhibr_file_open_file_io_handle(
 	          *file,
-	          source,
+	          file_io_handle,
 	          LIBHIBR_OPEN_READ,
 	          error );
-#else
-	result = libhibr_file_open(
-	          *file,
-	          source,
-	          LIBHIBR_OPEN_READ,
-	          error );
-#endif
+
 	if( result != 1 )
 	{
 		libcerror_error_set(
@@ -654,6 +276,8 @@ int hibr_test_file_initialize(
 	          &file,
 	          &error );
 
+	file = NULL;
+
 	HIBR_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -665,8 +289,6 @@ int hibr_test_file_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	file = NULL;
 
 #if defined( HAVE_HIBR_TEST_MEMORY )
 
@@ -825,7 +447,7 @@ int hibr_test_file_open(
 
 	/* Initialize test
 	 */
-	result = hibr_test_file_get_narrow_source(
+	result = hibr_test_get_narrow_source(
 	          source,
 	          narrow_source,
 	          256,
@@ -875,6 +497,62 @@ int hibr_test_file_open(
 	 error );
 
 	/* Test error cases
+	 */
+	result = libhibr_file_open(
+	          NULL,
+	          narrow_source,
+	          LIBHIBR_OPEN_READ,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libhibr_file_open(
+	          file,
+	          NULL,
+	          LIBHIBR_OPEN_READ,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libhibr_file_open(
+	          file,
+	          narrow_source,
+	          -1,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test open when already opened
 	 */
 	result = libhibr_file_open(
 	          file,
@@ -946,7 +624,7 @@ int hibr_test_file_open_wide(
 
 	/* Initialize test
 	 */
-	result = hibr_test_file_get_wide_source(
+	result = hibr_test_get_wide_source(
 	          source,
 	          wide_source,
 	          256,
@@ -996,6 +674,62 @@ int hibr_test_file_open_wide(
 	 error );
 
 	/* Test error cases
+	 */
+	result = libhibr_file_open_wide(
+	          NULL,
+	          wide_source,
+	          LIBHIBR_OPEN_READ,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libhibr_file_open_wide(
+	          file,
+	          NULL,
+	          LIBHIBR_OPEN_READ,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libhibr_file_open_wide(
+	          file,
+	          wide_source,
+	          -1,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test open when already opened
 	 */
 	result = libhibr_file_open_wide(
 	          file,
@@ -1052,6 +786,231 @@ on_error:
 }
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+
+/* Tests the libhibr_file_open_file_io_handle function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_file_open_file_io_handle(
+     const system_character_t *source )
+{
+	libbfio_handle_t *file_io_handle = NULL;
+	libcerror_error_t *error         = NULL;
+	libhibr_file_t *file             = NULL;
+	size_t string_length             = 0;
+	int result                       = 0;
+
+	/* Initialize test
+	 */
+	result = libbfio_file_initialize(
+	          &file_io_handle,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "file_io_handle",
+	 file_io_handle );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	string_length = system_string_length(
+	                 source );
+
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libbfio_file_set_name_wide(
+	          file_io_handle,
+	          source,
+	          string_length,
+	          &error );
+#else
+	result = libbfio_file_set_name(
+	          file_io_handle,
+	          source,
+	          string_length,
+	          &error );
+#endif
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libhibr_file_initialize(
+	          &file,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "file",
+	 file );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test open
+	 */
+	result = libhibr_file_open_file_io_handle(
+	          file,
+	          file_io_handle,
+	          LIBHIBR_OPEN_READ,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libhibr_file_open_file_io_handle(
+	          NULL,
+	          file_io_handle,
+	          LIBHIBR_OPEN_READ,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libhibr_file_open_file_io_handle(
+	          file,
+	          NULL,
+	          LIBHIBR_OPEN_READ,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libhibr_file_open_file_io_handle(
+	          file,
+	          file_io_handle,
+	          -1,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test open when already opened
+	 */
+	result = libhibr_file_open_file_io_handle(
+	          file,
+	          file_io_handle,
+	          LIBHIBR_OPEN_READ,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libhibr_file_free(
+	          &file,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "file",
+	 file );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libbfio_handle_free(
+	          &file_io_handle,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "file_io_handle",
+	 file_io_handle );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( file != NULL )
+	{
+		libhibr_file_free(
+		 &file,
+		 NULL );
+	}
+	if( file_io_handle != NULL )
+	{
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+	}
+	return( 0 );
+}
 
 /* Tests the libhibr_file_close function
  * Returns 1 if successful or 0 if not
@@ -1291,31 +1250,36 @@ on_error:
 int hibr_test_file_read_buffer(
      libhibr_file_t *file )
 {
-	uint8_t buffer[ 16 ];
+	uint8_t buffer[ HIBR_TEST_FILE_READ_BUFFER_SIZE ];
 
 	libcerror_error_t *error = NULL;
+	time_t timestamp         = 0;
+	size64_t remaining_size  = 0;
 	size64_t size            = 0;
+	size_t read_size         = 0;
 	ssize_t read_count       = 0;
 	off64_t offset           = 0;
+	off64_t read_offset      = 0;
+	int number_of_tests      = 1024;
+	int random_number        = 0;
+	int result               = 0;
+	int test_number          = 0;
 
 	/* Determine size
 	 */
-	offset = libhibr_file_seek_offset(
+	result = libhibr_file_get_media_size(
 	          file,
-	          0,
-	          SEEK_END,
+	          &size,
 	          &error );
 
-	HIBR_TEST_ASSERT_NOT_EQUAL_INT64(
-	 "offset",
-	 offset,
-	 (int64_t) -1 );
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
 
 	HIBR_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	size = (size64_t) offset;
 
 	/* Reset offset to 0
 	 */
@@ -1336,26 +1300,190 @@ int hibr_test_file_read_buffer(
 
 	/* Test regular cases
 	 */
-	if( size > 16 )
+	read_size = HIBR_TEST_FILE_READ_BUFFER_SIZE;
+
+	if( size < HIBR_TEST_FILE_READ_BUFFER_SIZE )
 	{
+		read_size = (size_t) size;
+	}
+	read_count = libhibr_file_read_buffer(
+	              file,
+	              buffer,
+	              HIBR_TEST_FILE_READ_BUFFER_SIZE,
+	              &error );
+
+	HIBR_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) read_size );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	if( size > 8 )
+	{
+		/* Set offset to size - 8
+		 */
+		offset = libhibr_file_seek_offset(
+		          file,
+		          -8,
+		          SEEK_END,
+		          &error );
+
+		HIBR_TEST_ASSERT_EQUAL_INT64(
+		 "offset",
+		 offset,
+		 (int64_t) size - 8 );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+
+		/* Read buffer on size boundary
+		 */
 		read_count = libhibr_file_read_buffer(
 		              file,
 		              buffer,
-		              16,
+		              HIBR_TEST_FILE_READ_BUFFER_SIZE,
 		              &error );
 
 		HIBR_TEST_ASSERT_EQUAL_SSIZE(
 		 "read_count",
 		 read_count,
-		 (ssize_t) 16 );
+		 (ssize_t) 8 );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+
+		/* Read buffer beyond size boundary
+		 */
+		read_count = libhibr_file_read_buffer(
+		              file,
+		              buffer,
+		              HIBR_TEST_FILE_READ_BUFFER_SIZE,
+		              &error );
+
+		HIBR_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) 0 );
 
 		HIBR_TEST_ASSERT_IS_NULL(
 		 "error",
 		 error );
 	}
-/* TODO read on size boundary */
-/* TODO read beyond size boundary */
+	/* Stress test read buffer
+	 */
+	timestamp = time(
+	             NULL );
 
+	srand(
+	 (unsigned int) timestamp );
+
+	offset = libhibr_file_seek_offset(
+	          file,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 0 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	remaining_size = size;
+
+	for( test_number = 0;
+	     test_number < number_of_tests;
+	     test_number++ )
+	{
+		random_number = rand();
+
+		HIBR_TEST_ASSERT_GREATER_THAN_INT(
+		 "random_number",
+		 random_number,
+		 -1 );
+
+		read_size = (size_t) random_number % HIBR_TEST_FILE_READ_BUFFER_SIZE;
+
+#if defined( HIBR_TEST_FILE_VERBOSE )
+		fprintf(
+		 stdout,
+		 "libhibr_file_read_buffer: at offset: %" PRIi64 " (0x%08" PRIx64 ") of size: %" PRIzd "\n",
+		 read_offset,
+		 read_offset,
+		 read_size );
+#endif
+		read_count = libhibr_file_read_buffer(
+		              file,
+		              buffer,
+		              read_size,
+		              &error );
+
+		if( read_size > remaining_size )
+		{
+			read_size = (size_t) remaining_size;
+		}
+		HIBR_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) read_size );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+
+		read_offset += read_count;
+
+		result = libhibr_file_get_offset(
+		          file,
+		          &offset,
+		          &error );
+
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 1 );
+
+		HIBR_TEST_ASSERT_EQUAL_INT64(
+		 "offset",
+		 offset,
+		 read_offset );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+
+		remaining_size -= read_count;
+
+		if( remaining_size == 0 )
+		{
+			offset = libhibr_file_seek_offset(
+			          file,
+			          0,
+			          SEEK_SET,
+			          &error );
+
+			HIBR_TEST_ASSERT_EQUAL_INT64(
+			 "offset",
+			 offset,
+			 (int64_t) 0 );
+
+			HIBR_TEST_ASSERT_IS_NULL(
+			 "error",
+			 error );
+
+			read_offset = 0;
+
+			remaining_size = size;
+		}
+	}
 	/* Reset offset to 0
 	 */
 	offset = libhibr_file_seek_offset(
@@ -1378,7 +1506,7 @@ int hibr_test_file_read_buffer(
 	read_count = libhibr_file_read_buffer(
 	              NULL,
 	              buffer,
-	              16,
+	              HIBR_TEST_FILE_READ_BUFFER_SIZE,
 	              &error );
 
 	HIBR_TEST_ASSERT_EQUAL_SSIZE(
@@ -1396,7 +1524,7 @@ int hibr_test_file_read_buffer(
 	read_count = libhibr_file_read_buffer(
 	              file,
 	              NULL,
-	              16,
+	              HIBR_TEST_FILE_READ_BUFFER_SIZE,
 	              &error );
 
 	HIBR_TEST_ASSERT_EQUAL_SSIZE(
@@ -1428,6 +1556,392 @@ int hibr_test_file_read_buffer(
 
 	libcerror_error_free(
 	 &error );
+
+#if defined( HAVE_HIBR_TEST_RWLOCK )
+
+	/* Test libhibr_file_read_buffer with pthread_rwlock_wrlock failing in libcthreads_read_write_lock_grab_for_write
+	 */
+	hibr_test_pthread_rwlock_wrlock_attempts_before_fail = 0;
+
+	read_count = libhibr_file_read_buffer(
+	              file,
+	              buffer,
+	              HIBR_TEST_PARTITION_READ_BUFFER_SIZE,
+	              &error );
+
+	if( hibr_test_pthread_rwlock_wrlock_attempts_before_fail != -1 )
+	{
+		hibr_test_pthread_rwlock_wrlock_attempts_before_fail = -1;
+	}
+	else
+	{
+		HIBR_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) -1 );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	/* Test libhibr_file_read_buffer with pthread_rwlock_unlock failing in libcthreads_read_write_lock_release_for_write
+	 */
+	hibr_test_pthread_rwlock_unlock_attempts_before_fail = 0;
+
+	read_count = libhibr_file_read_buffer(
+	              file,
+	              buffer,
+	              HIBR_TEST_PARTITION_READ_BUFFER_SIZE,
+	              &error );
+
+	if( hibr_test_pthread_rwlock_unlock_attempts_before_fail != -1 )
+	{
+		hibr_test_pthread_rwlock_unlock_attempts_before_fail = -1;
+	}
+	else
+	{
+		HIBR_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) -1 );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#endif /* defined( HAVE_HIBR_TEST_RWLOCK ) */
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libhibr_file_read_buffer_at_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int hibr_test_file_read_buffer_at_offset(
+     libhibr_file_t *file )
+{
+	uint8_t buffer[ HIBR_TEST_FILE_READ_BUFFER_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	time_t timestamp         = 0;
+	size64_t remaining_size  = 0;
+	size64_t size            = 0;
+	size_t read_size         = 0;
+	ssize_t read_count       = 0;
+	off64_t offset           = 0;
+	off64_t read_offset      = 0;
+	int number_of_tests      = 1024;
+	int random_number        = 0;
+	int result               = 0;
+	int test_number          = 0;
+
+	/* Determine size
+	 */
+	result = libhibr_file_get_media_size(
+	          file,
+	          &size,
+	          &error );
+
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	read_size = HIBR_TEST_FILE_READ_BUFFER_SIZE;
+
+	if( size < HIBR_TEST_FILE_READ_BUFFER_SIZE )
+	{
+		read_size = (size_t) size;
+	}
+	read_count = libhibr_file_read_buffer_at_offset(
+	              file,
+	              buffer,
+	              HIBR_TEST_FILE_READ_BUFFER_SIZE,
+	              0,
+	              &error );
+
+	HIBR_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) read_size );
+
+	HIBR_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	if( size > 8 )
+	{
+		/* Read buffer on size boundary
+		 */
+		read_count = libhibr_file_read_buffer_at_offset(
+		              file,
+		              buffer,
+		              HIBR_TEST_FILE_READ_BUFFER_SIZE,
+		              size - 8,
+		              &error );
+
+		HIBR_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) 8 );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+
+		/* Read buffer beyond size boundary
+		 */
+		read_count = libhibr_file_read_buffer_at_offset(
+		              file,
+		              buffer,
+		              HIBR_TEST_FILE_READ_BUFFER_SIZE,
+		              size + 8,
+		              &error );
+
+		HIBR_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) 0 );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+	}
+	/* Stress test read buffer
+	 */
+	timestamp = time(
+	             NULL );
+
+	srand(
+	 (unsigned int) timestamp );
+
+	for( test_number = 0;
+	     test_number < number_of_tests;
+	     test_number++ )
+	{
+		random_number = rand();
+
+		HIBR_TEST_ASSERT_GREATER_THAN_INT(
+		 "random_number",
+		 random_number,
+		 -1 );
+
+		if( size > 0 )
+		{
+			read_offset = (off64_t) random_number % size;
+		}
+		read_size = (size_t) random_number % HIBR_TEST_FILE_READ_BUFFER_SIZE;
+
+#if defined( HIBR_TEST_FILE_VERBOSE )
+		fprintf(
+		 stdout,
+		 "libhibr_file_read_buffer_at_offset: at offset: %" PRIi64 " (0x%08" PRIx64 ") of size: %" PRIzd "\n",
+		 read_offset,
+		 read_offset,
+		 read_size );
+#endif
+		read_count = libhibr_file_read_buffer_at_offset(
+		              file,
+		              buffer,
+		              read_size,
+		              read_offset,
+		              &error );
+
+		remaining_size = size - read_offset;
+
+		if( read_size > remaining_size )
+		{
+			read_size = (size_t) remaining_size;
+		}
+		HIBR_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) read_size );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+
+		read_offset += read_count;
+
+		result = libhibr_file_get_offset(
+		          file,
+		          &offset,
+		          &error );
+
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 1 );
+
+		HIBR_TEST_ASSERT_EQUAL_INT64(
+		 "offset",
+		 offset,
+		 read_offset );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+	}
+	/* Test error cases
+	 */
+	read_count = libhibr_file_read_buffer_at_offset(
+	              NULL,
+	              buffer,
+	              HIBR_TEST_FILE_READ_BUFFER_SIZE,
+	              0,
+	              &error );
+
+	HIBR_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	read_count = libhibr_file_read_buffer_at_offset(
+	              file,
+	              NULL,
+	              HIBR_TEST_FILE_READ_BUFFER_SIZE,
+	              0,
+	              &error );
+
+	HIBR_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	read_count = libhibr_file_read_buffer_at_offset(
+	              file,
+	              buffer,
+	              (size_t) SSIZE_MAX + 1,
+	              0,
+	              &error );
+
+	HIBR_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	read_count = libhibr_file_read_buffer_at_offset(
+	              file,
+	              buffer,
+	              HIBR_TEST_FILE_READ_BUFFER_SIZE,
+	              -1,
+	              &error );
+
+	HIBR_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) -1 );
+
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+#if defined( HAVE_HIBR_TEST_RWLOCK )
+
+	/* Test libhibr_file_read_buffer_at_offset with pthread_rwlock_wrlock failing in libcthreads_read_write_lock_grab_for_write
+	 */
+	hibr_test_pthread_rwlock_wrlock_attempts_before_fail = 0;
+
+	read_count = libhibr_file_read_buffer_at_offset(
+	              file,
+	              buffer,
+	              HIBR_TEST_FILE_READ_BUFFER_SIZE,
+	              0,
+	              &error );
+
+	if( hibr_test_pthread_rwlock_wrlock_attempts_before_fail != -1 )
+	{
+		hibr_test_pthread_rwlock_wrlock_attempts_before_fail = -1;
+	}
+	else
+	{
+		HIBR_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) -1 );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	/* Test libhibr_file_read_buffer_at_offset with pthread_rwlock_unlock failing in libcthreads_read_write_lock_release_for_write
+	 */
+	hibr_test_pthread_rwlock_unlock_attempts_before_fail = 0;
+
+	read_count = libhibr_file_read_buffer_at_offset(
+	              file,
+	              buffer,
+	              HIBR_TEST_FILE_READ_BUFFER_SIZE,
+	              0,
+	              &error );
+
+	if( hibr_test_pthread_rwlock_unlock_attempts_before_fail != -1 )
+	{
+		hibr_test_pthread_rwlock_unlock_attempts_before_fail = -1;
+	}
+	else
+	{
+		HIBR_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) -1 );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#endif /* defined( HAVE_HIBR_TEST_RWLOCK ) */
 
 	return( 1 );
 
@@ -1602,6 +2116,66 @@ int hibr_test_file_seek_offset(
 	libcerror_error_free(
 	 &error );
 
+#if defined( HAVE_HIBR_TEST_RWLOCK )
+
+	/* Test libhibr_file_seek_offset with pthread_rwlock_wrlock failing in libcthreads_read_write_lock_grab_for_write
+	 */
+	hibr_test_pthread_rwlock_wrlock_attempts_before_fail = 0;
+
+	offset = libhibr_file_seek_offset(
+	          file,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	if( hibr_test_pthread_rwlock_wrlock_attempts_before_fail != -1 )
+	{
+		hibr_test_pthread_rwlock_wrlock_attempts_before_fail = -1;
+	}
+	else
+	{
+		HIBR_TEST_ASSERT_EQUAL_INT64(
+		 "offset",
+		 (int64_t) offset,
+		 (int64_t) -1 );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	/* Test libhibr_file_seek_offset with pthread_rwlock_unlock failing in libcthreads_read_write_lock_release_for_write
+	 */
+	hibr_test_pthread_rwlock_unlock_attempts_before_fail = 0;
+
+	offset = libhibr_file_seek_offset(
+	          file,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	if( hibr_test_pthread_rwlock_unlock_attempts_before_fail != -1 )
+	{
+		hibr_test_pthread_rwlock_unlock_attempts_before_fail = -1;
+	}
+	else
+	{
+		HIBR_TEST_ASSERT_EQUAL_INT64(
+		 "offset",
+		 (int64_t) offset,
+		 (int64_t) -1 );
+
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#endif /* defined( HAVE_HIBR_TEST_RWLOCK ) */
+
 	return( 1 );
 
 on_error:
@@ -1621,7 +2195,6 @@ int hibr_test_file_get_offset(
 {
 	libcerror_error_t *error = NULL;
 	off64_t offset           = 0;
-	int offset_is_set        = 0;
 	int result               = 0;
 
 	/* Test regular cases
@@ -1631,16 +2204,14 @@ int hibr_test_file_get_offset(
 	          &offset,
 	          &error );
 
-	HIBR_TEST_ASSERT_NOT_EQUAL_INT(
+	HIBR_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	HIBR_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	offset_is_set = result;
 
 	/* Test error cases
 	 */
@@ -1661,25 +2232,23 @@ int hibr_test_file_get_offset(
 	libcerror_error_free(
 	 &error );
 
-	if( offset_is_set != 0 )
-	{
-		result = libhibr_file_get_offset(
-		          file,
-		          NULL,
-		          &error );
+	result = libhibr_file_get_offset(
+	          file,
+	          NULL,
+	          &error );
 
-		HIBR_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		HIBR_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -1699,7 +2268,6 @@ int hibr_test_file_get_media_size(
 {
 	libcerror_error_t *error = NULL;
 	size64_t media_size      = 0;
-	int media_size_is_set    = 0;
 	int result               = 0;
 
 	/* Test regular cases
@@ -1709,16 +2277,14 @@ int hibr_test_file_get_media_size(
 	          &media_size,
 	          &error );
 
-	HIBR_TEST_ASSERT_NOT_EQUAL_INT(
+	HIBR_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	HIBR_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	media_size_is_set = result;
 
 	/* Test error cases
 	 */
@@ -1739,25 +2305,23 @@ int hibr_test_file_get_media_size(
 	libcerror_error_free(
 	 &error );
 
-	if( media_size_is_set != 0 )
-	{
-		result = libhibr_file_get_media_size(
-		          file,
-		          NULL,
-		          &error );
+	result = libhibr_file_get_media_size(
+	          file,
+	          NULL,
+	          &error );
 
-		HIBR_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	HIBR_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		HIBR_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	HIBR_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -1781,11 +2345,13 @@ int main(
      char * const argv[] )
 #endif
 {
-	libcerror_error_t *error   = NULL;
-	libhibr_file_t *file       = NULL;
-	system_character_t *source = NULL;
-	system_integer_t option    = 0;
-	int result                 = 0;
+	libbfio_handle_t *file_io_handle = NULL;
+	libcerror_error_t *error         = NULL;
+	libhibr_file_t *file             = NULL;
+	system_character_t *source       = NULL;
+	system_integer_t option          = 0;
+	size_t string_length             = 0;
+	int result                       = 0;
 
 	while( ( option = hibr_test_getopt(
 	                   argc,
@@ -1827,6 +2393,63 @@ int main(
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 	if( source != NULL )
 	{
+		result = libbfio_file_initialize(
+		          &file_io_handle,
+		          &error );
+
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 1 );
+
+	        HIBR_TEST_ASSERT_IS_NOT_NULL(
+	         "file_io_handle",
+	         file_io_handle );
+
+	        HIBR_TEST_ASSERT_IS_NULL(
+	         "error",
+	         error );
+
+		string_length = system_string_length(
+		                 source );
+
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libbfio_file_set_name_wide(
+		          file_io_handle,
+		          source,
+		          string_length,
+		          &error );
+#else
+		result = libbfio_file_set_name(
+		          file_io_handle,
+		          source,
+		          string_length,
+		          &error );
+#endif
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 1 );
+
+	        HIBR_TEST_ASSERT_IS_NULL(
+	         "error",
+	         error );
+
+		result = libhibr_check_file_signature_file_io_handle(
+		          file_io_handle,
+		          &error );
+
+		HIBR_TEST_ASSERT_NOT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+	}
+	if( result != 0 )
+	{
 		HIBR_TEST_RUN_WITH_ARGS(
 		 "libhibr_file_open",
 		 hibr_test_file_open,
@@ -1841,11 +2464,10 @@ int main(
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
-#if defined( LIBHIBR_HAVE_BFIO )
-
-		/* TODO add test for libhibr_file_open_file_io_handle */
-
-#endif /* defined( LIBHIBR_HAVE_BFIO ) */
+		HIBR_TEST_RUN_WITH_ARGS(
+		 "libhibr_file_open_file_io_handle",
+		 hibr_test_file_open_file_io_handle,
+		 source );
 
 		HIBR_TEST_RUN(
 		 "libhibr_file_close",
@@ -1856,11 +2478,11 @@ int main(
 		 hibr_test_file_open_close,
 		 source );
 
-		/* Initialize test
+		/* Initialize file for tests
 		 */
 		result = hibr_test_file_open_source(
 		          &file,
-		          source,
+		          file_io_handle,
 		          &error );
 
 		HIBR_TEST_ASSERT_EQUAL_INT(
@@ -1868,13 +2490,13 @@ int main(
 		 result,
 		 1 );
 
-	        HIBR_TEST_ASSERT_IS_NOT_NULL(
-	         "file",
-	         file );
+		HIBR_TEST_ASSERT_IS_NOT_NULL(
+		 "file",
+		 file );
 
-	        HIBR_TEST_ASSERT_IS_NULL(
-	         "error",
-	         error );
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
 
 		HIBR_TEST_RUN_WITH_ARGS(
 		 "libhibr_file_signal_abort",
@@ -1892,7 +2514,10 @@ int main(
 		 hibr_test_file_read_buffer,
 		 file );
 
-		/* TODO: add tests for libhibr_file_read_buffer_at_offset */
+		HIBR_TEST_RUN_WITH_ARGS(
+		 "libhibr_file_read_buffer_at_offset",
+		 hibr_test_file_read_buffer_at_offset,
+		 file );
 
 		HIBR_TEST_RUN_WITH_ARGS(
 		 "libhibr_file_seek_offset",
@@ -1921,8 +2546,27 @@ int main(
 		 0 );
 
 		HIBR_TEST_ASSERT_IS_NULL(
-	         "file",
-	         file );
+		 "file",
+		 file );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+	}
+	if( file_io_handle != NULL )
+	{
+		result = libbfio_handle_free(
+		          &file_io_handle,
+		          &error );
+
+		HIBR_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 1 );
+
+		HIBR_TEST_ASSERT_IS_NULL(
+	         "file_io_handle",
+	         file_io_handle );
 
 	        HIBR_TEST_ASSERT_IS_NULL(
 	         "error",
@@ -1940,8 +2584,14 @@ on_error:
 	}
 	if( file != NULL )
 	{
-		hibr_test_file_close_source(
+		libhibr_file_free(
 		 &file,
+		 NULL );
+	}
+	if( file_io_handle != NULL )
+	{
+		libbfio_handle_free(
+		 &file_io_handle,
 		 NULL );
 	}
 	return( EXIT_FAILURE );

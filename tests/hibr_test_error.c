@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #endif
 
-#include "hibr_test_libcerror.h"
 #include "hibr_test_libhibr.h"
 #include "hibr_test_macros.h"
 #include "hibr_test_unused.h"
