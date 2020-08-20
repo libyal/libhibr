@@ -21,7 +21,9 @@ SUBDIRS = \
 	hibrtools \
 	po \
 	manuals \
-	tests
+	tests \
+	ossfuzz \
+	msvscpp
 
 DPKG_FILES = \
 	dpkg/changelog \
@@ -116,4 +118,5 @@ splint:
 	(cd $(srcdir)/hibrtools && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/po && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/tests && $(MAKE) $(AM_MAKEFLAGS))
+	(cd $(srcdir)/ossfuzz && $(MAKE) $(AM_MAKEFLAGS))
 
