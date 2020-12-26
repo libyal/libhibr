@@ -939,7 +939,7 @@ int libhibr_file_open_read(
 	}
 	while( (size64_t) file_offset < file_size )
 	{
-		if( libhibr_compressed_page_map_read(
+		if( libhibr_compressed_page_map_read_file_io_handle(
 		     compressed_page_map,
 		     internal_file->io_handle,
 		     file_io_handle,

@@ -55,7 +55,14 @@ int libhibr_compressed_page_map_free(
      libhibr_compressed_page_map_t **compressed_page_map,
      libcerror_error_t **error );
 
-int libhibr_compressed_page_map_read(
+int libhibr_compressed_page_map_read_data(
+     libhibr_compressed_page_map_t *compressed_page_map,
+     libhibr_io_handle_t *io_handle,
+     const uint8_t *data,
+     size_t data_size,
+     libcerror_error_t **error );
+
+int libhibr_compressed_page_map_read_file_io_handle(
      libhibr_compressed_page_map_t *compressed_page_map,
      libhibr_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,

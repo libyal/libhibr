@@ -30,7 +30,7 @@
 
 #include <libhibr/extern.h>
 
-#if defined( __CYGWIN__ )
+#if defined( __CYGWIN__ ) || defined( __MINGW32__ )
 #define LIBHIBR_EXTERN_VARIABLE	extern
 #else
 #define LIBHIBR_EXTERN_VARIABLE	LIBHIBR_EXTERN

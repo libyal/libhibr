@@ -71,7 +71,7 @@ int libhibr_compressed_page_data_read_header(
      off64_t file_offset,
      libcerror_error_t **error );
 
-int libhibr_compressed_page_data_read(
+int libhibr_compressed_page_data_read_file_io_handle(
      libhibr_compressed_page_data_t *compressed_page_data,
      libbfio_handle_t *file_io_handle,
      off64_t file_offset,

@@ -179,26 +179,11 @@ int libhibr_compressed_page_data_read_header(
 		 file_offset );
 	}
 #endif
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
-	     file_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek compressed page data header offset: %" PRIi64 ".",
-		 function,
-		 file_offset );
-
-		return( -1 );
-	}
-	read_count = libbfio_handle_read_buffer(
+	read_count = libbfio_handle_read_buffer_at_offset(
 	              file_io_handle,
 	              (uint8_t *) &header,
 	              sizeof( hibr_compressed_page_data_header_t ),
+	              file_offset,
 	              error );
 
 	if( read_count != (ssize_t) sizeof( hibr_compressed_page_data_header_t ) )
@@ -207,8 +192,10 @@ int libhibr_compressed_page_data_read_header(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read compressed page data header data.",
-		 function );
+		 "%s: unable to read compressed page data header data at offset: %" PRIi64 " (0x%08" PRIx64 ").",
+		 function,
+		 file_offset,
+		 file_offset );
 
 		return( -1 );
 	}
@@ -304,14 +291,15 @@ int libhibr_compressed_page_data_read_header(
 		libcnotify_printf(
 		 "\n" );
 	}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 	return( 1 );
 }
 
 /* Reads compressed page data header
  * Returns 1 if successful or -1 on error
  */
-int libhibr_compressed_page_data_read(
+int libhibr_compressed_page_data_read_file_io_handle(
      libhibr_compressed_page_data_t *compressed_page_data,
      libbfio_handle_t *file_io_handle,
      off64_t file_offset,
@@ -320,7 +308,7 @@ int libhibr_compressed_page_data_read(
 	hibr_compressed_page_data_header_t header;
 
 	uint8_t *compressed_data      = NULL;
-	static char *function         = "libhibr_compressed_page_data_read";
+	static char *function         = "libhibr_compressed_page_data_read_file_io_handle";
 	size_t read_size              = 0;
 	size_t uncompressed_data_size = 0;
 	ssize_t read_count            = 0;
