@@ -79,7 +79,7 @@ enum LIBHIBR_FILE_TYPES
 
 #endif /* !defined( HAVE_LOCAL_LIBHIBR ) */
 
-/* The maximum number of cache entries defintions
+/* The maximum number of cache entries definitions
  */
 #define LIBHIBR_MAXIMUM_CACHE_ENTRIES_COMPRESSED_PAGE_DATA	1024
 
