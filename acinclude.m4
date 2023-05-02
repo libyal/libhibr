@@ -1,6 +1,6 @@
 dnl Checks for required headers and functions
 dnl
-dnl Version: 20230215
+dnl Version: 20200713
 
 dnl Function to detect if libhibr dependencies are available
 AC_DEFUN([AX_LIBHIBR_CHECK_LOCAL],
