@@ -164,7 +164,7 @@ install:
       .\builddokan.ps1 -Configuration ${Configuration} -Platform "Win32";
       .\builddokan.ps1 -Configuration ${Configuration} -Platform "x64"; }
     }
-- sh: if test ${BUILD_ENVIRONMENT} = "python-tox" || test ${BUILD_ENVIRONMENT} = "xcode"; then brew update -q; fi
+- sh: if test ${BUILD_ENVIRONMENT} = "python-tox" || test ${BUILD_ENVIRONMENT} = "xcode"; then brew update-reset && brew update -q; fi
 - sh: if test ${BUILD_ENVIRONMENT} = "python-tox" || test ${BUILD_ENVIRONMENT} = "xcode"; then brew install -q gettext gnu-sed || true; fi
 - ps: If ($env:BUILD_ENVIRONMENT -eq "cygwin64") {
     (New-Object Net.WebClient).DownloadFile("https://cygwin.com/setup-x86_64.exe", "C:\\cygwin64\\setup-x86_64.exe") }
