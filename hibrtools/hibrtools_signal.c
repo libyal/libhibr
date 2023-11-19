@@ -40,7 +40,7 @@ void (*hibrtools_signal_signal_handler)( hibrtools_signal_t ) = NULL;
 /* Signal handler for Ctrl+C or Ctrl+Break signals
  */
 BOOL WINAPI hibrtools_signal_handler(
-             unsigned long signal )
+             hibrtools_signal_t signal )
 {
 	static char *function = "hibrtools_signal_handler";
 
@@ -112,7 +112,7 @@ int hibrtools_signal_attach(
 	hibrtools_signal_signal_handler = signal_handler;
 
 	if( SetConsoleCtrlHandler(
-	     hibrtools_signal_handler,
+	     (PHANDLER_ROUTINE) hibrtools_signal_handler,
 	     TRUE ) == 0 )
 	{
 		libcerror_error_set(
@@ -179,7 +179,7 @@ int hibrtools_signal_detach(
 	static char *function = "hibrtools_signal_detach";
 
 	if( SetConsoleCtrlHandler(
-	     hibrtools_signal_handler,
+	     (PHANDLER_ROUTINE) hibrtools_signal_handler,
 	     FALSE ) == 0 )
 	{
 		libcerror_error_set(

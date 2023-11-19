@@ -88,18 +88,18 @@ library:
 	(cd $(srcdir)/po && $(MAKE) $(AM_MAKEFLAGS))
 
 distclean: clean
-	/bin/rm -f Makefile
-	/bin/rm -f config.status
-	/bin/rm -f config.cache
-	/bin/rm -f config.log
-	/bin/rm -f libhibr.pc
-	/bin/rm -f libhibr.spec
+	-rm -f Makefile
+	-rm -f config.status
+	-rm -f config.cache
+	-rm -f config.log
+	-rm -f libhibr.pc
+	-rm -f libhibr.spec
 	@for dir in ${subdirs}; do \
 		(cd $$dir && $(MAKE) distclean) \
 		|| case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 	done && test -z "$$fail"
 
-splint:
+splint-local:
 	(cd $(srcdir)/libcerror && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libcthreads && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libcdata && $(MAKE) splint $(AM_MAKEFLAGS))

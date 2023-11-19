@@ -76,11 +76,13 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libhibr_definitions.h
-	/bin/rm -f libhibr.rc
-	/bin/rm -f Makefile
+	-rm -f libhibr_definitions.h
+	-rm -f libhibr.rc
+	-rm -f Makefile
 
-splint:
+sources-local: $(BUILT_SOURCES)
+
+splint-local:
 	@echo "Running splint on libhibr ..."
 	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(libhibr_la_SOURCES)
 

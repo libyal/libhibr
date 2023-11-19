@@ -19,9 +19,9 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libhibr.h
-	/bin/rm -f libhibr/definitions.h
-	/bin/rm -f libhibr/features.h
-	/bin/rm -f libhibr/types.h
-	/bin/rm -f Makefile
+	-rm -f libhibr.h
+	-rm -f libhibr/definitions.h
+	-rm -f libhibr/features.h
+	-rm -f libhibr/types.h
+	-rm -f Makefile
 
