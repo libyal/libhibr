@@ -6,9 +6,7 @@ EXTRA_DIST = \
 	hibrinfo.1 \
 	libhibr.3
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f Makefile
 

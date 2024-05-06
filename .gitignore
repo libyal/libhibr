@@ -139,6 +139,7 @@ stamp-h[1-9]
 /tests/hibr_test_notify
 /tests/hibr_test_support
 /tests/input
+/tests/notify_stream.log
 /tests/tmp*
 
 # Local library dependencies specific files

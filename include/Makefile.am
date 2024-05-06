@@ -15,13 +15,11 @@ EXTRA_DIST = \
 	libhibr/features.h.in \
 	libhibr/types.h.in
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	libhibr.h \
+	libhibr/definitions.h \
+	libhibr/features.h \
+	libhibr/types.h \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f libhibr.h
-	-rm -f libhibr/definitions.h
-	-rm -f libhibr/features.h
-	-rm -f libhibr/types.h
-	-rm -f Makefile
 

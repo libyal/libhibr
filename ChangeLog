@@ -1,31 +1,9 @@
 TODO
 * update manuals
 
-20160126
-* worked on tests
-* applied updates
-
-20160110
-* 2016 update
-
-20150105
-* 2015 update
-
-20141229
-* updated dpkg files
-* updated dependencies
-* updated .gitignore
-
-20141202
-* moved compression to libfwnt
-
-20141130
-* code clean up
-* remove libfvalue dependency
-
 20141129
-* code clean up
-* changes for project move
+* see `git log' for more recent change log
+* code clean up and changes for project move
 
 20141021
 * changes for deployment

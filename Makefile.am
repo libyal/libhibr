@@ -54,16 +54,22 @@ EXTRA_DIST = \
 	$(PKGCONFIG_FILES) \
 	$(SPEC_FILES)
 
-MAINTAINERCLEANFILES = \
-	Makefile.in
+DISTCLEANFILES = \
+	config.status \
+	config.cache \
+	config.log \
+	libhibr.pc \
+	libhibr.spec \
+	Makefile \
+	Makefile.in \
+	po/Makevars
 
 pkgconfigdir = $(libdir)/pkgconfig
 
 pkgconfig_DATA = \
 	libhibr.pc
 
-libtool:
-	@LIBTOOL_DEPS@
+libtool: @LIBTOOL_DEPS@
 	cd $(srcdir) && $(SHELL) ./config.status --recheck
 
 lib: library
@@ -86,37 +92,4 @@ library:
 	(cd $(srcdir)/libfwnt && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libhibr && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/po && $(MAKE) $(AM_MAKEFLAGS))
-
-distclean: clean
-	-rm -f Makefile
-	-rm -f config.status
-	-rm -f config.cache
-	-rm -f config.log
-	-rm -f libhibr.pc
-	-rm -f libhibr.spec
-	@for dir in ${subdirs}; do \
-		(cd $$dir && $(MAKE) distclean) \
-		|| case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
-
-splint-local:
-	(cd $(srcdir)/libcerror && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libcthreads && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libcdata && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libclocale && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libcnotify && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libcsplit && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libuna && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libcfile && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libcpath && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libbfio && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libfcache && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libfdata && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libfdatatime $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libfwnt && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libhibr && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/hibrtools && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/po && $(MAKE) $(AM_MAKEFLAGS))
-	(cd $(srcdir)/tests && $(MAKE) $(AM_MAKEFLAGS))
-	(cd $(srcdir)/ossfuzz && $(MAKE) $(AM_MAKEFLAGS))
 
