@@ -1,5 +1,5 @@
 /*
- * Shows information obtained from a Windows Hibernation File (hiberfil.sys)
+ * Shows information obtained from a Windows Hibernation File (hiberfil.sys).
  *
  * Copyright (C) 2012-2024, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -52,7 +52,7 @@
 info_handle_t *hibrinfo_info_handle = NULL;
 int hibrinfo_abort                  = 0;
 
-/* Prints the executable usage information
+/* Prints usage information
  */
 void usage_fprint(
       FILE *stream )
@@ -137,7 +137,7 @@ int main( int argc, char * const argv[] )
 	 1 );
 
 	if( libclocale_initialize(
-             "hibrtools",
+	     "hibrtools",
 	     &error ) != 1 )
 	{
 		fprintf(
@@ -147,8 +147,8 @@ int main( int argc, char * const argv[] )
 		goto on_error;
 	}
         if( hibrtools_output_initialize(
-             _IONBF,
-             &error ) != 1 )
+	     _IONBF,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,

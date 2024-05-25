@@ -347,6 +347,7 @@ int mount_handle_close(
 	static char *function     = "mount_handle_close";
 	int file_index            = 0;
 	int number_of_files       = 0;
+	int result                = 0;
 
 	if( mount_handle == NULL )
 	{
@@ -371,7 +372,7 @@ int mount_handle_close(
 		 "%s: unable to retrieve number of files.",
 		 function );
 
-		goto on_error;
+		result = -1;
 	}
 	for( file_index = number_of_files - 1;
 	     file_index > 0;
@@ -391,7 +392,7 @@ int mount_handle_close(
 			 function,
 			 file_index );
 
-			goto on_error;
+			result = -1;
 		}
 /* TODO remove hibr_file from file system */
 
@@ -407,7 +408,7 @@ int mount_handle_close(
 			 function,
 			 file_index );
 
-			goto on_error;
+			result = -1;
 		}
 		if( libhibr_file_free(
 		     &hibr_file,
@@ -421,19 +422,10 @@ int mount_handle_close(
 			 function,
 			 file_index );
 
-			goto on_error;
+			result = -1;
 		}
 	}
-	return( 0 );
-
-on_error:
-	if( hibr_file != NULL )
-	{
-		libhibr_file_free(
-		 &hibr_file,
-		 NULL );
-	}
-	return( -1 );
+	return( result );
 }
 
 /* Retrieves a file entry for a specific path
