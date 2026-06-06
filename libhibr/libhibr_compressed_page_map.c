@@ -311,11 +311,10 @@ int libhibr_compressed_page_map_read_data(
 		libcnotify_printf(
 		 "\n" );
 	}
-#endif /* defined( HAVE_DEBUG_OUTPUT ) */
-
 /* TODO */
 	data_size = sizeof( hibr_compressed_page_map_header_win7_sp1_64bit_t )
 	          + ( number_of_entries * sizeof( hibr_compressed_page_map_entry_t ) );
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
 	return( 1 );
 }

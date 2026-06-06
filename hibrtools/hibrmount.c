@@ -27,6 +27,10 @@
 
 #include <stdio.h>
 
+#if defined( HAVE_FCNTL_H ) || defined( WINAPI )
+#include <fcntl.h>
+#endif
+
 #if defined( HAVE_IO_H ) || defined( WINAPI )
 #include <io.h>
 #endif
@@ -66,8 +70,11 @@ void usage_fprint(
 	}
 	fprintf( stream, "Use hibrmount to mount a Windows Hibernation File (hiberfil.sys)\n\n" );
 
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE )
 	fprintf( stream, "Usage: hibrmount [ -X extended_options ] [ -hvV ] file mount_point\n\n" );
-
+#else
+	fprintf( stream, "Usage: hibrmount [ -hvV ] file mount_point\n\n" );
+#endif
 	fprintf( stream, "\tfile:        a Windows Hibernation File (hiberfil.sys)\n\n" );
 	fprintf( stream, "\tmount_point: the directory to serve as mount point\n\n" );
 
@@ -75,7 +82,10 @@ void usage_fprint(
 	fprintf( stream, "\t-v:          verbose output to stderr, while hibrmount will remain running in the\n"
 	                 "\t             foreground\n" );
 	fprintf( stream, "\t-V:          print version\n" );
+
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE )
 	fprintf( stream, "\t-X:          extended options to pass to sub system\n" );
+#endif
 }
 
 /* Signal handler for hibrmount
@@ -131,18 +141,23 @@ int main( int argc, char * const argv[] )
 #endif
 {
 	libhibr_error_t *error                      = NULL;
-	system_character_t *mount_point             = NULL;
-	system_character_t *option_extended_options = NULL;
 	const system_character_t *path_prefix       = NULL;
 	system_character_t *source                  = NULL;
+	system_character_t *options                 = NULL;
 	char *program                               = "hibrmount";
 	system_integer_t option                     = 0;
 	size_t path_prefix_size                     = 0;
-	int result                                  = 0;
 	int verbose                                 = 0;
+
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE ) || defined( HAVE_LIBDOKAN )
+	system_character_t *mount_point             = NULL;
+	int result                                  = 0;
+#endif
 
 #if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE )
 	struct fuse_operations hibrmount_fuse_operations;
+
+	system_character_t *option_extended_options = NULL;
 
 #if defined( HAVE_LIBFUSE3 )
 	/* Need to set this to 1 even if there no arguments, otherwise this causes
@@ -159,6 +174,11 @@ int main( int argc, char * const argv[] )
 #elif defined( HAVE_LIBDOKAN )
 	DOKAN_OPERATIONS hibrmount_dokan_operations;
 	DOKAN_OPTIONS hibrmount_dokan_options;
+#endif
+
+#if defined( __MINGW32__ ) && defined( HAVE_MINGW_BINMODE )
+	_setmode( _fileno( stdout ), _O_BINARY );
+	_setmode( _fileno( stderr ), _O_BINARY );
 #endif
 
 	libcnotify_stream_set(
@@ -191,10 +211,15 @@ int main( int argc, char * const argv[] )
 	 stdout,
 	 program );
 
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE )
+	options = _SYSTEM_STRING( "hvVX:" );
+#else
+	options = _SYSTEM_STRING( "hvV" );
+#endif
 	while( ( option = hibrtools_getopt(
 	                   argc,
 	                   argv,
-	                   _SYSTEM_STRING( "hvVX:" ) ) ) != (system_integer_t) -1 )
+	                   options ) ) != (system_integer_t) -1 )
 	{
 		switch( option )
 		{
@@ -227,10 +252,12 @@ int main( int argc, char * const argv[] )
 
 				return( EXIT_SUCCESS );
 
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE )
 			case (system_integer_t) 'X':
 				option_extended_options = optarg;
 
 				break;
+#endif
 		}
 	}
 	if( optind == argc )
@@ -257,8 +284,9 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE ) || defined( HAVE_LIBDOKAN )
 	mount_point = argv[ optind ];
-
+#endif
 	libcnotify_verbose_set(
 	 verbose );
 	libhibr_notify_set_stream(

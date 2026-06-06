@@ -339,9 +339,9 @@ int libhibr_compressed_page_data_read_file_io_handle(
 
 		goto on_error;
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
 	file_offset += sizeof( hibr_compressed_page_data_header_t );
 
-#if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(

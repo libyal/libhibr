@@ -31,14 +31,17 @@
  */
 #if defined( LIBHIBR_DLL_EXPORT )
 #define LIBHIBR_EXTERN __declspec(dllexport)
+#define LIBHIBR_EXTERN_VARIABLE extern __declspec(dllexport)
 
 #elif defined( LIBHIBR_DLL_IMPORT )
-#define LIBHIBR_EXTERN extern __declspec(dllimport)
+#define LIBHIBR_EXTERN __declspec(dllimport)
+#define LIBHIBR_EXTERN_VARIABLE extern __declspec(dllimport)
 
 #else
 #define LIBHIBR_EXTERN extern
+#define LIBHIBR_EXTERN_VARIABLE extern
 
-#endif
+#endif /* defined( LIBHIBR_DLL_EXPORT ) */
 
 #endif /* !defined( _LIBHIBR_EXTERN_H ) */
 
