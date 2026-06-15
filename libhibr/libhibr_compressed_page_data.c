@@ -153,7 +153,6 @@ int libhibr_compressed_page_data_read_header(
 {
 	hibr_compressed_page_data_header_t header;
 
-	uint8_t *compressed_data      = NULL;
 	static char *function         = "libhibr_compressed_page_data_read_header";
 	ssize_t read_count            = 0;
 	uint32_t compressed_data_size = 0;
@@ -305,8 +304,6 @@ int libhibr_compressed_page_data_read_file_io_handle(
      off64_t file_offset,
      libcerror_error_t **error )
 {
-	hibr_compressed_page_data_header_t header;
-
 	uint8_t *compressed_data      = NULL;
 	static char *function         = "libhibr_compressed_page_data_read_file_io_handle";
 	size_t read_size              = 0;

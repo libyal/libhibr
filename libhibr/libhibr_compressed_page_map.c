@@ -152,9 +152,9 @@ int libhibr_compressed_page_map_read_data(
 {
 	static char *function                     = "libhibr_compressed_page_map_read_data";
 	size_t compressed_page_map_read_data_size = 0;
-	uint32_t number_of_entries                = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
+	uint32_t number_of_entries                = 0;
 	uint32_t value_32bit                      = 0;
 #endif
 
@@ -240,9 +240,11 @@ int libhibr_compressed_page_map_read_data(
 		 ( (hibr_compressed_page_map_header_winxp_sp3_32bit_t *) data )->next_page_number,
 		 compressed_page_map->next_page_number );
 
+#if defined( HAVE_DEBUG_OUTPUT )
 		byte_stream_copy_to_uint32_little_endian(
 		 ( (hibr_compressed_page_map_header_winxp_sp3_32bit_t *) data )->number_of_entries,
 		 number_of_entries );
+#endif
 	}
 	else if( io_handle->file_type == LIBHIBR_FILE_TYPE_WINDOWS_7_64BIT )
 	{
@@ -250,9 +252,11 @@ int libhibr_compressed_page_map_read_data(
 		 ( (hibr_compressed_page_map_header_win7_sp1_64bit_t *) data )->next_page_number,
 		 compressed_page_map->next_page_number );
 
+#if defined( HAVE_DEBUG_OUTPUT )
 		byte_stream_copy_to_uint32_little_endian(
 		 ( (hibr_compressed_page_map_header_win7_sp1_64bit_t *) data )->number_of_entries,
 		 number_of_entries );
+#endif
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )

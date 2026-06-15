@@ -1113,11 +1113,7 @@ ssize_t libhibr_file_read_buffer(
 	size64_t media_size                                  = 0;
 	size_t buffer_offset                                 = 0;
 	size_t read_size                                     = 0;
-	off64_t block_file_offset                            = 0;
 	off64_t page_data_offset                             = 0;
-	uint64_t block_offset                                = 0;
-	uint64_t block_sector_offset                         = 0;
-	uint8_t block_is_sparse                              = 0;
 	int element_index                                    = 0;
 
 	if( file == NULL )

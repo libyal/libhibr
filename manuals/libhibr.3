@@ -1,6 +1,6 @@
-.Dd June  6, 2026
-.Dt libhibr 3
-.Os libhibr
+.Dd June 15, 2026
+.Dt LIBHIBR 3
+.Os
 .Sh NAME
 .Nm libhibr.h
 .Nd Library to access the Windows Hibernation File (hiberfil.sys) format
@@ -8,87 +8,249 @@
 .In libhibr.h
 .Pp
 Support functions
+.nf
 .Ft const char *
-.Fn libhibr_get_version "void"
+.Fo libhibr_get_version
+.Fa "void"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_get_access_flags_read "void"
+.Fo libhibr_get_access_flags_read
+.Fa "void"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_get_access_flags_read_write "void"
+.Fo libhibr_get_access_flags_read_write
+.Fa "void"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_get_access_flags_write "void"
+.Fo libhibr_get_access_flags_write
+.Fa "void"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_get_codepage "int *codepage" "libhibr_error_t **error"
+.Fo libhibr_get_codepage
+.Fa "int *codepage"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_set_codepage "int codepage" "libhibr_error_t **error"
+.Fo libhibr_set_codepage
+.Fa "int codepage"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_check_file_signature "const char *filename" "libhibr_error_t **error"
+.Fo libhibr_check_file_signature
+.Fa "const char *filename"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
 .Pp
 Available when compiled with wide character string support:
+.nf
 .Ft int
-.Fn libhibr_check_file_signature_wide "const wchar_t *filename" "libhibr_error_t **error"
+.Fo libhibr_check_file_signature_wide
+.Fa "const wchar_t *filename"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
 .Pp
 Available when compiled with libbfio support:
+.nf
 .Ft int
-.Fn libhibr_check_file_signature_file_io_handle "libbfio_handle_t *bfio_handle" "libhibr_error_t **error"
+.Fo libhibr_check_file_signature_file_io_handle
+.Fa "libbfio_handle_t *bfio_handle"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
 .Pp
 Notify functions
+.nf
 .Ft void
-.Fn libhibr_notify_set_verbose "int verbose"
+.Fo libhibr_notify_set_verbose
+.Fa "int verbose"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_notify_set_stream "FILE *stream" "libhibr_error_t **error"
+.Fo libhibr_notify_set_stream
+.Fa "FILE *stream"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_notify_stream_open "const char *filename" "libhibr_error_t **error"
+.Fo libhibr_notify_stream_open
+.Fa "const char *filename"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_notify_stream_close "libhibr_error_t **error"
+.Fo libhibr_notify_stream_close
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
 .Pp
 Error functions
+.nf
 .Ft void
-.Fn libhibr_error_free "libhibr_error_t **error"
+.Fo libhibr_error_free
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_error_fprint "libhibr_error_t *error" "FILE *stream"
+.Fo libhibr_error_fprint
+.Fa "libhibr_error_t *error"
+.Fa "FILE *stream"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_error_sprint "libhibr_error_t *error" "char *string" "size_t size"
+.Fo libhibr_error_sprint
+.Fa "libhibr_error_t *error"
+.Fa "char *string"
+.Fa "size_t size"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_error_backtrace_fprint "libhibr_error_t *error" "FILE *stream"
+.Fo libhibr_error_backtrace_fprint
+.Fa "libhibr_error_t *error"
+.Fa "FILE *stream"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_error_backtrace_sprint "libhibr_error_t *error" "char *string" "size_t size"
+.Fo libhibr_error_backtrace_sprint
+.Fa "libhibr_error_t *error"
+.Fa "char *string"
+.Fa "size_t size"
+.Fc
+.fi
 .Pp
 File functions
+.nf
 .Ft int
-.Fn libhibr_file_initialize "libhibr_file_t **file" "libhibr_error_t **error"
+.Fo libhibr_file_initialize
+.Fa "libhibr_file_t **file"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_file_free "libhibr_file_t **file" "libhibr_error_t **error"
+.Fo libhibr_file_free
+.Fa "libhibr_file_t **file"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_file_signal_abort "libhibr_file_t *file" "libhibr_error_t **error"
+.Fo libhibr_file_signal_abort
+.Fa "libhibr_file_t *file"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_file_open "libhibr_file_t *file" "const char *filename" "int access_flags" "libhibr_error_t **error"
+.Fo libhibr_file_open
+.Fa "libhibr_file_t *file"
+.Fa "const char *filename"
+.Fa "int access_flags"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_file_close "libhibr_file_t *file" "libhibr_error_t **error"
+.Fo libhibr_file_close
+.Fa "libhibr_file_t *file"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft ssize_t
-.Fn libhibr_file_read_buffer "libhibr_file_t *file" "void *buffer" "size_t buffer_size" "libhibr_error_t **error"
+.Fo libhibr_file_read_buffer
+.Fa "libhibr_file_t *file"
+.Fa "void *buffer"
+.Fa "size_t buffer_size"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft ssize_t
-.Fn libhibr_file_read_buffer_at_offset "libhibr_file_t *file" "void *buffer" "size_t buffer_size" "off64_t offset" "libhibr_error_t **error"
+.Fo libhibr_file_read_buffer_at_offset
+.Fa "libhibr_file_t *file"
+.Fa "void *buffer"
+.Fa "size_t buffer_size"
+.Fa "off64_t offset"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft off64_t
-.Fn libhibr_file_seek_offset "libhibr_file_t *file" "off64_t offset" "int whence" "libhibr_error_t **error"
+.Fo libhibr_file_seek_offset
+.Fa "libhibr_file_t *file"
+.Fa "off64_t offset"
+.Fa "int whence"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_file_get_offset "libhibr_file_t *file" "off64_t *offset" "libhibr_error_t **error"
+.Fo libhibr_file_get_offset
+.Fa "libhibr_file_t *file"
+.Fa "off64_t *offset"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libhibr_file_get_media_size "libhibr_file_t *file" "size64_t *media_size" "libhibr_error_t **error"
+.Fo libhibr_file_get_media_size
+.Fa "libhibr_file_t *file"
+.Fa "size64_t *media_size"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
 .Pp
 Available when compiled with wide character string support:
+.nf
 .Ft int
-.Fn libhibr_file_open_wide "libhibr_file_t *file" "const wchar_t *filename" "int access_flags" "libhibr_error_t **error"
+.Fo libhibr_file_open_wide
+.Fa "libhibr_file_t *file"
+.Fa "const wchar_t *filename"
+.Fa "int access_flags"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
 .Pp
 Available when compiled with libbfio support:
+.nf
 .Ft int
-.Fn libhibr_file_open_file_io_handle "libhibr_file_t *file" "libbfio_handle_t *file_io_handle" "int access_flags" "libhibr_error_t **error"
+.Fo libhibr_file_open_file_io_handle
+.Fa "libhibr_file_t *file"
+.Fa "libbfio_handle_t *file_io_handle"
+.Fa "int access_flags"
+.Fa "libhibr_error_t **error"
+.Fc
+.fi
 .Sh DESCRIPTION
 The
 .Fn libhibr_get_version
 function is used to retrieve the library version.
 .Sh RETURN VALUES
-Most of the functions return NULL or \-1 on error, dependent on the return type.
-For the actual return values see "libhibr.h".
+Most of the functions return NULL or \-1 on error, dependent on the return \
+type.
+For the actual return values see
+.In libhibr.h .
 .Sh ENVIRONMENT
 None
 .Sh FILES
@@ -106,14 +268,16 @@ To compile libhibr with wide character support use:
 .sp
 .Ar LIBHIBR_WIDE_CHARACTER_TYPE
  in libhibr/features.h can be used to determine if libhibr was compiled with wide character support.
+.Sh SEE ALSO
+.In libhibr.h
+.Sh AUTHORS
+.An Joachim Metz <joachim.metz@gmail.com>
 .Sh BUGS
-Please report bugs of any kind on the project issue tracker: https://github.com/libyal/libhibr/issues
-.Sh AUTHOR
-These man pages are generated from "libhibr.h".
+Please report bugs of any kind on the project issue tracker: \
+https://github.com/libyal/libhibr/issues
 .Sh COPYRIGHT
 Copyright (C) 2012-2026, Joachim Metz <joachim.metz@gmail.com>.
 .sp
 This is free software; see the source for copying conditions.
-There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-.Sh SEE ALSO
-the libhibr.h include file
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A \
+PARTICULAR PURPOSE.
