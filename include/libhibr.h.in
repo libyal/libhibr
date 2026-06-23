@@ -313,7 +313,7 @@ int libhibr_file_get_offset(
      libhibr_error_t **error );
 
 /* Retrieves the media size
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBHIBR_EXTERN \
 int libhibr_file_get_media_size(

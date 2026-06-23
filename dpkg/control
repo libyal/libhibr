@@ -1,7 +1,7 @@
 Source: libhibr
 Priority: extra
 Maintainer: Joachim Metz <joachim.metz@gmail.com>
-Build-Depends: debhelper (>= 9), dh-autoreconf, pkg-config, libfuse-dev
+Build-Depends: debhelper (>= 13), dh-autoreconf, libfuse3-dev, pkg-config
 Standards-Version: 4.1.4
 Section: libs
 Homepage: https://github.com/libyal/libhibr
