@@ -1,19 +1,20 @@
 .Dd June 27, 2026
-.Dt HIBRINFO 1
+.Dt HIBRMOUNT 1
 .Os
 .Sh NAME
-.Nm hibrinfo
-.Nd determines information about a Windows Hibernation File (hiberfil.sys)
+.Nm hibrmount
+.Nd mounts a Windows Hibernation File (hiberfil.sys)
 .Sh SYNOPSIS
-.Nm hibrinfo
+.Nm hibrmount
+.Op Fl X Ar extended_options
 .Op Fl hvV
 .Ar source
+.Ar mount_point
 .Sh DESCRIPTION
-.Nm hibrinfo
-is a utility to determine information about a Windows Hibernation File \
-(hiberfil.sys)
+.Nm hibrmount
+is a utility to mount a Windows Hibernation File (hiberfil.sys)
 .Pp
-.Nm hibrinfo
+.Nm hibrmount
 is part of the
 .Nm libhibr
 package.
@@ -21,16 +22,20 @@ package.
 is a library to access the Windows Hibernation File (hiberfil.sys) format
 .Pp
 .Ar source
-is the source file.
+a Windows Hibernation File (hiberfil.sys)
+.Ar mount_point
+the directory to serve as mount point
 .Pp
 The options are as follows:
 .Bl -tag -width Ds
 .It Fl h
 shows this help
 .It Fl v
-verbose output to stderr
+verbose output to stderr, while hibrmount will remain running in the foreground
 .It Fl V
 print version
+.It Fl X Ar extended_options
+extended options to pass to sub system
 .El
 .Sh ENVIRONMENT
 None
@@ -38,10 +43,8 @@ None
 None
 .Sh EXAMPLES
 .Bd -literal
-# hibrinfo hiberfil.sys
-hibrinfo 20120915
-.sp
-Windows Hibernation File information:
+# hibrmount hiberfil.sys
+hibrmount 20260626
 .sp
 .Ed
 .Sh DIAGNOSTICS
@@ -49,7 +52,7 @@ Errors, verbose and debug output are printed to stderr when verbose output \
 \-v is enabled.
 Verbose and debug output are only printed when enabled at compilation.
 .Sh SEE ALSO
-.Xr hibrmount 1
+.Xr hibrinfo 1
 .Sh AUTHORS
 .An Joachim Metz <joachim.metz@gmail.com>
 .Sh BUGS

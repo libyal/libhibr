@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
   [libhibr],
-  [20260623],
+  [20260627],
   [https://github.com/libyal/libhibr/issues])
 
 AC_CONFIG_SRCDIR(
